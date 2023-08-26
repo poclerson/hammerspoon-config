@@ -1,7 +1,19 @@
-IsWindowHeld = false
+local spoon = {
+  name = 'Window'
+}
+
+function spoon:start()
+  IsWindowHeld = false
+
+  local eventsWatcher = hs.eventtap.new({hs.eventtap.event.types.leftMouseUp}, watchEvents)
+  local applicationWatcher = hs.application.watcher.new(watchApplications)
+
+  applicationWatcher:start()
+  eventsWatcher:start()
+end
 
 -- Maximizes window while taking stage manager into account
-local function maximizeWindow(window)
+function maximizeWindow(window)
   if (not window) then
     return
   end
@@ -11,7 +23,7 @@ local function maximizeWindow(window)
 end
 
 -- Applications events listener
-local function watchApplications(name, event)
+function watchApplications(name, event)
   local app = hs.application.get(name)
   if (event == hs.application.watcher.launched) then
     maximizeWindow(app:focusedWindow())
@@ -26,15 +38,11 @@ local function watchApplications(name, event)
 end
 
 -- Keyboard/mouse events listener
-local function watchEvents(event) 
+function watchEvents(event) 
   if (IsWindowHeld) then
     maximizeWindow(hs.application.frontmostApplication():focusedWindow())
     IsWindowHeld = false
   end
 end
 
-local eventsWatcher = hs.eventtap.new({hs.eventtap.event.types.leftMouseUp}, watchEvents)
-local applicationWatcher = hs.application.watcher.new(watchApplications)
-
-applicationWatcher:start()
-eventsWatcher:start()
+return spoon
