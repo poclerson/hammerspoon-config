@@ -25,15 +25,15 @@ end
 -- Applications events listener
 function watchApplications(name, event)
   local app = hs.application.get(name)
-  if (event == hs.application.watcher.launched) then
-    maximizeWindow(app:focusedWindow())
-  end
   if (event == hs.application.watcher.activated) then
-    local leftClickDownWatcher = hs.eventtap.new(
-      {hs.eventtap.event.types.leftMouseDown},
-      function() IsWindowHeld = true end
-    ) 
-    leftClickDownWatcher:start()
+    if app then
+      maximizeWindow(app:focusedWindow()) 
+      local leftClickDownWatcher = hs.eventtap.new(
+        {hs.eventtap.event.types.leftMouseDown},
+        function() IsWindowHeld = true end
+      )
+      leftClickDownWatcher:start()
+    end
   end
 end
 

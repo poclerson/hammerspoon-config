@@ -3,7 +3,6 @@ hs.window.animationDuration = 0
 
 local spoons = {
   'Window',
-  'Touch',
 }
 
 for _, spoon in pairs(spoons) do
