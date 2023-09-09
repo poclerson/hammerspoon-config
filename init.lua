@@ -31,6 +31,7 @@ end
 
 local spoons = {
   'Window',
+  'Switcher'
 }
 
 for _, spoon in pairs(spoons) do

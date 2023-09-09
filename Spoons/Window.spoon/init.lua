@@ -8,8 +8,6 @@ function spoon:start()
   eventsWatcher = hs.eventtap.new({hs.eventtap.event.types.leftMouseUp}, watchEvents)
 
   eventsWatcher:start()
-
-  hs.loadSpoon('Monitors')
 end
 
 -- Maximizes window while taking stage manager into account
