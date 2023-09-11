@@ -2,7 +2,7 @@ local spoon = {
   name = 'Window'
 }
 
-function spoon:start()
+function spoon:init()
   IsWindowHeld = false
 
   eventsWatcher = hs.eventtap.new({hs.eventtap.event.types.leftMouseUp}, watchEvents)

@@ -1,6 +1,24 @@
 -- Define global variables
 hs.window.animationDuration = 0
 
+KeyCodes = {
+  q = 12,
+  w = 13,
+  esc = 53,
+  m = 46,
+  tab = 48,
+  ugrave = 50,
+}
+
+SwitcherKeyBinds = {
+  quitSelected = KeyCodes.q,
+  minimizeSelected = KeyCodes.m,
+  closeAllWindowsOfSelected = KeyCodes.w,
+  selectNext = KeyCodes.tab,
+  selectPrev = KeyCodes.ugrave,
+  closeSwitcher = KeyCodes.esc
+}
+
 -- Base window layout configuration
 local applicationsLocation = {
   Spotify = 3,
@@ -30,12 +48,13 @@ for app, screen in pairs(applicationsLocation) do
 end
 
 local spoons = {
+  'Utils',
   'Window',
-  'Switcher'
+  'Switcher',
 }
 
 for _, spoon in pairs(spoons) do
-  hs.loadSpoon(spoon):start()
+  hs.loadSpoon(spoon)
 end
 
 local function onApplicationEvent(name, event)
