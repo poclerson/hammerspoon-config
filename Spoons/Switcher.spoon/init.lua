@@ -75,22 +75,20 @@ local function handleState(event)
     if eventType == hs.eventtap.event.types.keyDown then
       eachPair(switcher.actions, function (name, fn)
         if SwitcherKeyBinds[name] == keycode then
-          if name == 'selectNext' then
+          if name == 'selectNext' or switcher.isOpen then
             fn(switcher:getSelectedApp())
             blockDefault = true
             return
           end
-          if switcher.isOpen then
-            fn(switcher:getSelectedApp())
-            blockDefault = true
-          end
-          return
         end
         if type(SwitcherKeyBinds[name]) == 'table' then
           eachPair(SwitcherKeyBinds[name], function (fnParameter, fnKeyCode)
             if fnKeyCode == keycode then
-              blockDefault = true
-              fn(switcher:getSelectedApp(), fnParameter)
+              if name == 'selectNext' or switcher.isOpen then
+                fn(switcher:getSelectedApp(), fnParameter)
+                blockDefault = true
+                return
+              end
             end
           end)
         end
@@ -115,6 +113,9 @@ function switcher:init()
     closeSwitcher = switcher.closeSwitcher,
     moveSelectedToScreen = function (application, screenIndex)
       switcher:moveSelectedToScreen(application, screenIndex)
+    end,
+    moveSelectedToDirection = function (application, direction)
+      switcher:moveSelectedToDirection(application, direction)
     end,
   }
   cache = utils:getAllOpenApps()
@@ -172,6 +173,35 @@ end
 function switcher:moveSelectedToScreen(application, screenIndex)
   local mainWindow = application.instance:mainWindow()
   mainWindow:moveToScreen(Screens[screenIndex])
+  mainWindow:focus()
+end
+
+function switcher:moveSelectedToDirection(application, direction)
+  local directions = {
+    north = function (screen)
+      local frame = screen:fullFrame()
+      local side = hs.geometry.rect(frame.x + frame.w / 2, frame.y, 1, 1)
+      return screen:toNorth(side)
+    end,
+    west = function (screen)
+      local frame = screen:fullFrame()
+      local side = hs.geometry.rect(frame.x, frame.y + frame.h / 2, 1, 1)
+      return screen:toWest(side)
+    end,
+    south = function (screen)
+      local frame = screen:fullFrame()
+      local side = hs.geometry.rect(frame.x + frame.w / 2, frame.y, 1, 1)
+      return screen:toSouth()
+    end,
+    east = function (screen)
+      local frame = screen:fullFrame()
+      local side = hs.geometry.rect(frame.x + frame.w, frame.y + frame.h / 2, 1, 1)
+      return screen:toEast(side)
+    end,
+  }
+  -- printTable(directions[direction])
+  local mainWindow = application.instance:mainWindow()
+  mainWindow:moveToScreen(directions[direction](hs.screen.mainScreen()))
   mainWindow:focus()
 end
 

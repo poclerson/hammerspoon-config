@@ -1,4 +1,5 @@
 require('lib')
+hs.loadSpoon('Utils')
 
 MainScreen = hs.screen.find('U28E590')
 
@@ -41,37 +42,29 @@ end
 -- Define global variables
 hs.window.animationDuration = 0
 
-KeyCodes = {
-  q = 12,
-  w = 13,
-  num1 = 18,
-  num2 = 19,
-  num3 = 20,
-  num4 = 21,
-  num5 = 22,
-  num6 = 23,
-  esc = 53,
-  m = 46,
-  tab = 48,
-  ugrave = 50,
-}
+local keyCodes = spoon.Utils.keyCodes
 
 SwitcherKeyBinds = {
-  quitSelected = KeyCodes.q,
-  minimizeSelected = KeyCodes.m,
-  closeAllWindowsOfSelected = KeyCodes.w,
-  selectNext = KeyCodes.tab,
-  selectPrev = KeyCodes.ugrave,
-  closeSwitcher = KeyCodes.esc,
+  quitSelected = keyCodes.q,
+  minimizeSelected = keyCodes.m,
+  closeAllWindowsOfSelected = keyCodes.x,
+  selectNext = keyCodes.tab,
+  selectPrev = keyCodes.ugrave,
+  closeSwitcher = keyCodes.esc,
   moveSelectedToScreen = {
-    main = KeyCodes.num1,
-    screen1 = KeyCodes.num2,
-    screen2 = KeyCodes.num3,
+    main = keyCodes.num1,
+    screen1 = keyCodes.num2,
+    screen2 = keyCodes.num3,
+  },
+  moveSelectedToDirection = {
+    north = keyCodes.w,
+    west = keyCodes.a,
+    south = keyCodes.s,
+    east = keyCodes.d,
   }
 }
 
 local spoons = {
-  'Utils',
   'Window',
   'Switcher',
 }
