@@ -2,91 +2,88 @@ require('lib')
 
 local switcher = {
   name = 'Switcher',
-  isOpen = false,
-  indexSelected = 1,
 }
 
-cache = nil
-
 local switcherUi = hs.loadSpoon('SwitcherUi')
-ui = switcherUi.new(50)
-local utils = hs.loadSpoon('Utils')
 
--- Handles wether or not to redraw everything when the app switcher is opened
-local function refresh()
-  currentlyOpenApps = utils:getAllOpenApps()
+local function refresh(self)
+  local cache = self.cache
+  local ui = self.ui
+
+  currentlyOpenApps = spoon.Utils:getAllOpenApps()
   if cache ~= currentlyOpenApps then
     cache = currentlyOpenApps
     ui:refreshFrames(cache)
     ui:drawBackground(cache)
-    ui:drawSelection(switcher.indexSelected)
+    ui:drawSelection(self.indexSelected)
     ui:drawApps(cache)
   end
 end
 
-local function show()
-  eachPair(ui.switcher, function(name, canvas) canvas:show() end)
+local function show(self)
+  eachPair(self.ui.switcher, function(name, canvas) canvas:show() end)
 end
 
-local function hide()
-  eachPair(ui.switcher, function(name, canvas) canvas:hide() end)
+local function hide(self)
+  eachPair(self.ui.switcher, function(name, canvas) canvas:hide() end)
 end
 
-local function open()
-  switcher.isOpen = true
-  switcher.indexSelected = 1
+local function open(self)
+  self.isOpen = true
+  self.indexSelected = 1
 
-  refresh()
-  show()
+  refresh(self)
+  show(self)
 end
 
-local function close()
-  switcher.isOpen = false
+local function close(self)
+  local ui = self.ui
+  self.isOpen = false
   ui:removeAllElements(ui.selection)
-  hide()
-  cache = utils:getAllOpenApps()
+  hide(self)
+  self.cache = spoon.Utils:getAllOpenApps()
 end
 
-local function next()
-  switcher.indexSelected = switcher.indexSelected + 1
-  if switcher.indexSelected > #utils:getAllOpenApps() then
-    switcher.indexSelected = 1
+local function next(self)
+  self.indexSelected = self.indexSelected + 1
+  if self.indexSelected > #spoon.Utils:getAllOpenApps() then
+    self.indexSelected = 1
   end
-  ui:drawSelection(switcher.indexSelected)
+  self.ui:drawSelection(self.indexSelected)
 end
 
-local function prev()
-  switcher.indexSelected = switcher.indexSelected - 1
-  if switcher.indexSelected < 1 then
-    switcher.indexSelected = #utils:getAllOpenApps()
+local function prev(self)
+  self.indexSelected = self.indexSelected - 1
+  if self.indexSelected < 1 then
+    self.indexSelected = #spoon.Utils:getAllOpenApps()
   end
-  ui:drawSelection(switcher.indexSelected)
+  self.ui:drawSelection(self.indexSelected)
 end
 
 -- Handle what action to call when keyboard events related to the app switcher are called
-local function handleState(event)
+local function handleState(self, event)
   local eventType = event:getType()
   local flags = event:getFlags()
   local keycode = event:getKeyCode()
   local blockDefault = false
 
-  if flags:containExactly{'cmd'} then
+  if flags:containExactly{self.key} then
     blockDefault = false
 
     if eventType == hs.eventtap.event.types.keyDown then
-      eachPair(switcher.actions, function (name, fn)
-        if SwitcherKeyBinds[name] == keycode then
-          if name == 'selectNext' or switcher.isOpen then
-            fn(switcher:getSelectedApp())
+      eachPair(self.actions, function (name, fn)
+        if self.keyBinds[name] == keycode then
+          if name == 'selectNext' or self.isOpen then
+            fn(self, self:getSelectedApp())
             blockDefault = true
             return
           end
         end
-        if type(SwitcherKeyBinds[name]) == 'table' then
-          eachPair(SwitcherKeyBinds[name], function (fnParameter, fnKeyCode)
+        if type(self.keyBinds[name]) == 'table' then
+          eachPair(self.keyBinds[name], function (fnParameter, fnKeyCode)
             if fnKeyCode == keycode then
-              if name == 'selectNext' or switcher.isOpen then
-                fn(switcher:getSelectedApp(), fnParameter)
+              if name == 'selectNext' or self.isOpen then
+                fn(self, self:getSelectedApp(), fnParameter)
                 blockDefault = true
                 return
               end
@@ -97,53 +94,24 @@ local function handleState(event)
       return blockDefault
     end
   else
-    if switcher.isOpen then
-      switcher:openSelected(switcher:getSelectedApp())
+    if self.isOpen then
+      self:openSelected(self:getSelectedApp())
       return true
     end
   end
 end
 
-function switcher:init()
-  switcher.actions = {
-    quitSelected = switcher.quitSelected,
-    minimizeSelected = switcher.minimizeSelected,
-    closeAllWindowsOfSelected = switcher.closeAllWindowsOfSelected,
-    selectNext = switcher.selectNext,
-    selectPrev = switcher.selectPrev,
-    closeSwitcher = switcher.closeSwitcher,
-    moveSelectedToScreen = function (application, screenIndex)
-      switcher:moveSelectedToScreen(application, screenIndex)
-    end,
-    moveSelectedToDirection = function (application, direction)
-      switcher:moveSelectedToDirection(application, direction)
-    end,
-  }
-  cache = utils:getAllOpenApps()
-  openHandler = hs.eventtap.new({
-    hs.eventtap.event.types.keyDown,
-    hs.eventtap.event.types.keyUp,
-    hs.eventtap.event.types.flagsChanged,
-  }, handleState)
-  openHandler:start()
-end
-
--- Returns the currently selected app
-function switcher:getSelectedApp()
-  return utils:getAllOpenApps()[switcher.indexSelected]
-end
-
 -- Open the application selected by the switcher
 function switcher:openSelected(application)
-  if switcher.isOpen then
-    close()
+  if self.isOpen then
+    close(self)
     if application.instance:isRunning() then
       application.instance:activate()
     else
       hs.application.open(application.name)
     end
 
-    moveToStart(cache, function (app)
+    moveToStart(self.cache, function (app)
       return app.name == application.name
     end)
 
@@ -153,10 +121,10 @@ end
 
 -- Closes the application selected by the switcher
 function switcher:quitSelected(application)
-  application.app:kill()
-  refreshFrames()
-  drawApps()
-  next()
+  next(self)
+  application.instance:kill()
+  refresh(self)
+  self.ui:drawApps()
 end
 
 -- Minimizes the application selected by the switcher
@@ -171,13 +139,16 @@ function switcher:closeAllWindowsOfSelected(application)
   end)
 end
 
+-- Moves the main window of the application selected by the switcher to the designated screen
 function switcher:moveSelectedToScreen(application, screenIndex)
   local mainWindow = application.instance:mainWindow()
   mainWindow:moveToScreen(Screens[screenIndex])
   mainWindow:focus()
 end
 
+-- Moves the main window of the application selected by the switcher in the designated direction
 function switcher:moveSelectedToDirection(application, direction)
+  print(application, direction)
   local directions = {
     north = function (screen)
       local frame = screen:fullFrame()
@@ -208,21 +179,113 @@ end
 
 -- Selects the next application
 function switcher:selectNext()
-  if switcher.isOpen then
-    next()
+  if self.isOpen then
+    next(self)
   else
-    open()
+    open(self)
   end
 end
 
 -- Selects the previous application
 function switcher:selectPrev()
-  prev()
+  prev(self)
 end
 
 -- Closes the switcher
 function switcher:closeSwitcher()
-  close()
+  close(self)
+end
+
+function switcher:getSelectedApp()
+  return spoon.Utils:getAllOpenApps()[self.indexSelected]
+end
+
+--[[
+  Creates a new instance of the switcher
+
+  ### Parameters:
+
+  `key`: set the key used to activate the switcher
+
+  `keyBinds`: set all the other key bindings related to different actions
+  ~~~ lua
+  keyBinds = {
+    quitSelected,
+    minimizeSelected,
+    closeAllWindowsOfSelected,
+    selectNext,
+    selectPrev,
+    closeSwitcher,
+    moveSelectedToScreen = {
+      [index of global Screens object] = key bind
+    },
+    moveSelectedToDirection = {
+      [cardinal direction] = key bind
+    }
+  }
+
+  `ui`: `SwitcherUi` object
+]]
+function switcher.new(key, keyBinds, ui)
+  local keyCodes = spoon.Utils.keyCodes
+
+  local defaultKeyBinds = {
+    quitSelected = keyCodes.q,
+    minimizeSelected = keyCodes.m,
+    closeAllWindowsOfSelected = keyCodes.x,
+    selectNext = keyCodes.tab,
+    selectPrev = keyCodes.ugrave,
+    closeSwitcher = keyCodes.esc,
+    moveSelectedToScreen = {
+      main = keyCodes.num1,
+      screen1 = keyCodes.num2,
+      screen2 = keyCodes.num3,
+    },
+    moveSelectedToDirection = {
+      north = keyCodes.w,
+      west = keyCodes.a,
+      south = keyCodes.s,
+      east = keyCodes.d,
+    }
+  }
+
+  local self = setmetatable({
+    key = key and key or 'alt',
+    isOpen = false,
+    indexSelected = 1,
+    cache = spoon.Utils:getAllOpenApps(),
+    ui = switcherUi.new(ui),
+    actions = {},
+    keyBinds = keyBinds and map(defaultKeyBinds, function (action, keyBind)
+      local customKeyBind = keyBinds[action]
+      return {[action] = customKeyBind or keyBind}
+    end)
+  }, {
+    __index = switcher
+  })
+  self.actions = {
+    quitSelected = self.quitSelected,
+    minimizeSelected = self.minimizeSelected,
+    closeAllWindowsOfSelected = self.closeAllWindowsOfSelected,
+    selectNext = self.selectNext,
+    selectPrev = selectPrev,
+    closeSwitcher = self.closeSwitcher,
+    moveSelectedToScreen = function (application, screenIndex)
+      moveSelectedToScreen(application, screenIndex)
+    end,
+    moveSelectedToDirection = function (application, direction)
+      moveSelectedToDirection(application, direction)
+    end,
+  }
+  self.openHandler = hs.eventtap.new({
+    hs.eventtap.event.types.keyDown,
+    hs.eventtap.event.types.keyUp,
+    hs.eventtap.event.types.flagsChanged,
+  }, function (event)
+    handleState(self, event)
+  end)
+  self.openHandler:start()
+  return self
 end
 
 return switcher

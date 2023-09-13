@@ -42,28 +42,6 @@ end
 -- Define global variables
 hs.window.animationDuration = 0
 
-local keyCodes = spoon.Utils.keyCodes
-
-SwitcherKeyBinds = {
-  quitSelected = keyCodes.q,
-  minimizeSelected = keyCodes.m,
-  closeAllWindowsOfSelected = keyCodes.x,
-  selectNext = keyCodes.tab,
-  selectPrev = keyCodes.ugrave,
-  closeSwitcher = keyCodes.esc,
-  moveSelectedToScreen = {
-    main = keyCodes.num1,
-    screen1 = keyCodes.num2,
-    screen2 = keyCodes.num3,
-  },
-  moveSelectedToDirection = {
-    north = keyCodes.w,
-    west = keyCodes.a,
-    south = keyCodes.s,
-    east = keyCodes.d,
-  }
-}
-
 local spoons = {
   'Window',
   'Switcher',
@@ -80,3 +58,5 @@ end
 applicationWatcher = hs.application.watcher.new(onApplicationEvent)
 
 applicationWatcher:start()
+
+spoon.Switcher.new('alt')

@@ -102,11 +102,14 @@ function ui:removeAllElements(canvas)
   end)
 end
 
-function ui.new(applicationWidth, color, padding)
+function ui.new(args)
+  if args == nil then
+    args = {}
+  end
   local self = setmetatable({
-    color = color and color or defaultUi.color,
-    applicationWidth = applicationWidth and applicationWidth or defaultUi.applicationWidth,
-    padding = padding and padding or defaultUi.padding,
+    color = args.color and args.color or defaultUi.color,
+    applicationWidth = args.applicationWidth and args.applicationWidth or defaultUi.applicationWidth,
+    padding = args.padding and args.padding or defaultUi.padding,
   }, {
     __index = ui
   })
