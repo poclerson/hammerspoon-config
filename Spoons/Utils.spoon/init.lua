@@ -13,7 +13,7 @@ local utils = {
   }
   ```
 ]] 
-function utils:getAllOpenApps()
+function utils.getAllOpenApps()
   local windows = hs.window.allWindows()
 
   appsFormatted = {}

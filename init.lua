@@ -1,23 +1,13 @@
--- Define global variables
-hs.window.animationDuration = 0
+require('lib')
 
-KeyCodes = {
-  q = 12,
-  w = 13,
-  esc = 53,
-  m = 46,
-  tab = 48,
-  ugrave = 50,
-}
+MainScreen = hs.screen.find('U28E590')
 
-SwitcherKeyBinds = {
-  quitSelected = KeyCodes.q,
-  minimizeSelected = KeyCodes.m,
-  closeAllWindowsOfSelected = KeyCodes.w,
-  selectNext = KeyCodes.tab,
-  selectPrev = KeyCodes.ugrave,
-  closeSwitcher = KeyCodes.esc
-}
+Screens = map(hs.screen.allScreens(), function (index, screen)
+  if screen == MainScreen then
+    return {['main'] = screen}
+  end
+  return {['screen'..index - 1] = screen}
+end)
 
 -- Base window layout configuration
 local applicationsLocation = {
@@ -26,6 +16,7 @@ local applicationsLocation = {
   Mattermost = 3,
   Messenger = 3,
   DevPod = 3,
+  Hammerspoon = 3,
   Code = 2,
 }
 
@@ -47,15 +38,47 @@ for app, screen in pairs(applicationsLocation) do
   ApplicationsScreens[app] = numberedScreens[screen]
 end
 
+-- Define global variables
+hs.window.animationDuration = 0
+
+KeyCodes = {
+  q = 12,
+  w = 13,
+  num1 = 18,
+  num2 = 19,
+  num3 = 20,
+  num4 = 21,
+  num5 = 22,
+  num6 = 23,
+  esc = 53,
+  m = 46,
+  tab = 48,
+  ugrave = 50,
+}
+
+SwitcherKeyBinds = {
+  quitSelected = KeyCodes.q,
+  minimizeSelected = KeyCodes.m,
+  closeAllWindowsOfSelected = KeyCodes.w,
+  selectNext = KeyCodes.tab,
+  selectPrev = KeyCodes.ugrave,
+  closeSwitcher = KeyCodes.esc,
+  moveSelectedToScreen = {
+    main = KeyCodes.num1,
+    screen1 = KeyCodes.num2,
+    screen2 = KeyCodes.num3,
+  }
+}
+
 local spoons = {
   'Utils',
   'Window',
   'Switcher',
 }
 
-for _, spoon in pairs(spoons) do
+each(spoons, function (index, spoon)
   hs.loadSpoon(spoon)
-end
+end)
 
 local function onApplicationEvent(name, event)
   spoon.Window:watchApplications(name, event)
@@ -64,9 +87,3 @@ end
 applicationWatcher = hs.application.watcher.new(onApplicationEvent)
 
 applicationWatcher:start()
-
-function reloadConfig(paths, force)
-  print('Config reloaded')
-  applicationWatcher:stop()
-  applicationWatcher = nil
-end

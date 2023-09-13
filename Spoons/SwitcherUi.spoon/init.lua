@@ -1,10 +1,9 @@
 local utils = hs.loadSpoon('Utils')
 
-mainScreen = hs.screen.find('U28E590'):fullFrame()
-screenWidth = mainScreen.w
-screenHeight = mainScreen.h
+local mainScreen = Screens.main
 
 local ui = {
+  name = 'SwitcherUi',
   applicationWidth = 100,
   padding = 30,
   color = {
@@ -24,28 +23,24 @@ local ui = {
 
 ui.height = ui.padding * 2 + ui.applicationWidth
 
-function ui:verticalPadding()
-  return self.padding * 2
+local function horizontalPadding(apps)
+  return ui.padding * (#apps + 1)
 end
 
-function ui:horizontalPadding(apps)
-  return self.padding * (#apps + 1)
-end
-
-function ui:position(apps)
+local function position(apps)
   local applicationsWidth = ui.applicationWidth * #apps
   return {
-    w = applicationsWidth + ui:horizontalPadding(apps),
+    w = applicationsWidth + horizontalPadding(apps),
     h = ui.height,
-    x = screenWidth / 2 - (applicationsWidth + ui:horizontalPadding(apps)) / 2, 
-    y = screenHeight / 2 - (ui.height) / 2, 
+    x = mainScreen:frame().w / 2 - (applicationsWidth + horizontalPadding(apps)) / 2, 
+    y = mainScreen:frame().h / 2 - (ui.height) / 2, 
   }
 end
 
 function ui:init()
-  ui.background = hs.canvas.new(ui:position(utils:getAllOpenApps()))
-  ui.selection = hs.canvas.new(ui:position(utils:getAllOpenApps()))
-  ui.apps = hs.canvas.new(ui:position(utils:getAllOpenApps()))
+  ui.background = hs.canvas.new(position(utils:getAllOpenApps()))
+  ui.selection = hs.canvas.new(position(utils:getAllOpenApps()))
+  ui.apps = hs.canvas.new(position(utils:getAllOpenApps()))
   ui.background:level(4)
   ui.selection:level(5)
   ui.apps:level(6)
@@ -59,7 +54,7 @@ end
 
 -- Draws the background
 function ui:drawBackground(apps)
-  ui.background:frame(ui:position(apps))
+  ui.background:frame(position(apps))
   ui.background:appendElements({
     action = 'fill',
     fillColor = ui.color.background,
@@ -111,7 +106,7 @@ end
 
 function ui:refreshFrames(apps)
   eachPair(ui.switcher, function (index, canvas)
-    canvas:frame(ui:position(apps))
+    canvas:frame(position(apps))
   end)
 end
 
