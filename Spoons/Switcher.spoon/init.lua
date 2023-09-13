@@ -8,7 +8,8 @@ local switcher = {
 
 cache = nil
 
-local ui = hs.loadSpoon('SwitcherUi')
+local switcherUi = hs.loadSpoon('SwitcherUi')
+ui = switcherUi.new(50)
 local utils = hs.loadSpoon('Utils')
 
 -- Handles wether or not to redraw everything when the app switcher is opened
