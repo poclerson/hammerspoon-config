@@ -59,4 +59,4 @@ applicationWatcher = hs.application.watcher.new(onApplicationEvent)
 
 applicationWatcher:start()
 
-spoon.Switcher.new('alt')
+spoon.Switcher.new('alt', {}, {}, 'main')

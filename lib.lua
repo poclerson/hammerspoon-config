@@ -95,17 +95,15 @@ keyByValue = function (array, valueOfKey)
   return res
 end
 
-printTable = function(array)
+printTable = function(array, printStacktrace)
+  if printStacktrace then
+    print(debug.traceback())
+  end
   if array == nil then
     print('not a table')
     return
   end
   eachPair(array, function (index1, value1)
-    -- if type(value) == 'array' then
-    --   eachPair(value, function (index2, value2)
-    --     print(index2, value2)
-    --   end)
-    -- end
     print(index1, value1)
   end)
 end

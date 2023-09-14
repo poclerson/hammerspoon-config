@@ -1,7 +1,5 @@
 local utils = hs.loadSpoon('Utils')
 
-local mainScreen = Screens.main
-
 local defaultUi = {
   applicationWidth = 100,
   padding = 30,
@@ -30,12 +28,20 @@ end
 
 local function position(self, apps)
   local applicationsWidth = self.applicationWidth * #apps
+  local frame = self:getScreen():frame()
   return {
     w = applicationsWidth + horizontalPadding(self, apps),
     h = self.height,
-    x = mainScreen:frame().w / 2 - (applicationsWidth + horizontalPadding(self, apps)) / 2, 
-    y = mainScreen:frame().h / 2 - (self.height) / 2, 
+    x = frame.x + frame.w / 2 - (applicationsWidth + horizontalPadding(self, apps)) / 2, 
+    y = frame.y + frame.h / 2 - (self.height) / 2, 
   }
+end
+
+function ui:getScreen()
+  if self.screen == 'main' then
+    return hs.screen.mainScreen()
+  end
+  return self.screen
 end
 
 -- Draws the background
@@ -90,6 +96,12 @@ function ui:drawSelection(index)
   })
 end
 
+function ui:eachCanvas(fn)
+  eachPair(self.switcher, function (name, component)
+    fn(component)
+  end)
+end
+
 function ui:refreshFrames(apps)
   eachPair(self.switcher, function (index, canvas)
     canvas:frame(position(self, apps))
@@ -102,14 +114,18 @@ function ui:removeAllElements(canvas)
   end)
 end
 
-function ui.new(args)
-  if args == nil then
-    args = {}
+---@param prefs table All this `SwitcherUi` instance's default values
+---@param screen table|'main' All instances of `hs.screen` the switcher should appear on.
+---@return table switcherUi `SwitcherUi` instance 
+function ui.new(prefs, screen)
+  if prefs == nil then
+    prefs = {}
   end
   local self = setmetatable({
-    color = args.color and args.color or defaultUi.color,
-    applicationWidth = args.applicationWidth and args.applicationWidth or defaultUi.applicationWidth,
-    padding = args.padding and args.padding or defaultUi.padding,
+    color = prefs.color and prefs.color or defaultUi.color,
+    applicationWidth = prefs.applicationWidth and prefs.applicationWidth or defaultUi.applicationWidth,
+    padding = prefs.padding and prefs.padding or defaultUi.padding,
+    screen = screen or Screens['main']
   }, {
     __index = ui
   })
