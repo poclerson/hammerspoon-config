@@ -25,6 +25,11 @@ local defaultUi = {
 
 local ui = {
   name = 'SwitcherUi',
+  components = {
+    background = 'background',
+    applications = 'applications',
+    selection = 'selection',
+  },
   generic = {
     fillFrame = {
       x = 0,
@@ -35,10 +40,16 @@ local ui = {
   },
 }
 
-local function position(self)
-  local apps = utils:getAllOpenApps()
-  local horizontalPadding = self.style.padding * (#utils:getAllOpenApps() + 1)
-  local applicationsWidth = self.style.applicationWidth * #apps
+local function position(self, removedApp)
+  local appAmount = 0
+  eachPair(utils:getAllOpenApps(), function (index, app)
+    if removedApp and removedApp.name == app.name then
+      return
+    end
+    appAmount = appAmount + 1
+  end)
+  local horizontalPadding = self.style.padding * (appAmount + 1)
+  local applicationsWidth = self.style.applicationWidth * appAmount
   local frame = self:getScreen():frame()
 
   return {
@@ -57,10 +68,10 @@ function ui:getScreen()
 end
 
 -- Draws the background
-function ui:drawBackground()
+function ui:drawBackground(removedApp)
   local component = self.style.background
 
-  self.background:frame(position(self))
+  self.background:frame(position(self, removedApp))
   self.background:appendElements({
     type = 'rectangle',
     frame = self.generic.fillFrame,
@@ -73,9 +84,16 @@ function ui:drawBackground()
 end
 
 -- Draws all app icons
-function ui:drawApps()
+function ui:drawApps(removedApp)
+  local applications = {}
+  eachPair(utils:getAllOpenApps(), function (index, app)
+    if removedApp and removedApp.name == app.name then
+      return
+    end
+    table.insert(applications, app)
+  end)
   each(
-    utils:getAllOpenApps(),
+    applications,
     function(index, app)
       local style = self.style
       local component = self.style.applications
@@ -131,27 +149,31 @@ function ui:drawSwitcher(index)
 end
 
 function ui:showSwitcher()
-  self:eachCanvas(function (canvas)
+  self:eachCanvas(function (name, canvas)
     canvas:show()
   end)
 end
 
 function ui:eachCanvas(fn)
-  eachPair(self.switcher, function (name, component)
-    fn(component)
+  eachPair(self.switcher, function (name, canvas)
+    fn(name, canvas)
   end)
 end
 
-function ui:refreshFrames()
-  self:eachCanvas(function (canvas)
+function ui:refreshFrame(canvas, removedApp)
+  canvas:frame(position(self, removedApp))
+end
+
+function ui:refreshAllFrames()
+  self:eachCanvas(function (name, canvas)
     self:removeAllElements(canvas)
     canvas:frame(position(self))
   end)
 end
 
-function ui:removeAllElements(component)
-  eachPair(component, function ()
-    component:removeElement(1)
+function ui:removeAllElements(canvas)
+  eachPair(canvas, function ()
+    canvas:removeElement(1)
   end)
 end
 

@@ -8,9 +8,9 @@ local switcher = {
 
 -- Iterates each canvas of each ui
 local function eachUiCanvas(self, fn)
-  eachPair(self.uis, function (name, ui)
-    ui:eachCanvas(function (canvas)
-      fn(canvas)
+  eachPair(self.uis, function (uiName, ui)
+    ui:eachCanvas(function (canvasName, canvas)
+      fn(canvasName, canvas, uiName, ui)
     end)
   end)
 end
@@ -23,7 +23,7 @@ local function show(self)
 end
 
 local function hide(self)
-  eachUiCanvas(self, function (canvas)
+  eachUiCanvas(self, function (name, canvas)
     canvas:hide()
   end)
 end
@@ -33,7 +33,7 @@ local function open(self)
   self.indexSelected = 1
 
   eachPair(self.uis, function (index, ui)
-    ui:refreshFrames()
+    ui:refreshAllFrames()
   end)
 
   show(self)
@@ -184,10 +184,16 @@ end
 
 -- Closes the application selected by the switcher
 function switcher:quitSelected(application)
+  eachPair(self.uis, function (index, ui)
+    ui:refreshFrame(ui.apps, application)
+    ui:refreshFrame(ui.selection, application)
+    ui:removeAllElements(ui.background)
+    ui:removeAllElements(ui.apps)
+    ui:drawBackground(application)
+    ui:drawApps(application)
+  end)
   next(self)
   application.instance:kill()
-  refresh(self)
-  self.ui:drawApps()
 end
 
 -- Minimizes the application selected by the switcher
