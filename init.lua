@@ -1,10 +1,11 @@
 require('lib')
-hs.loadSpoon('Utils')
+require('hs.ipc')
+require('Utils')
 
 MainScreen = hs.screen.find('U28E590')
 
 Screens = map(hs.screen.allScreens(), function (index, screen)
-  if screen == MainScreen then
+  if  #hs.screen.allScreens() == 1 or screen == MainScreen then
     return {['main'] = screen}
   end
   return {['screen'..index - 1] = screen}
@@ -26,8 +27,8 @@ local applicationsLocation = {
   Maps under this format:
   ApplicationsScreens[applicationName] = screen UUID
 ]]
-defaultScreens = hs.screen.allScreens()
-numberedScreens = {}
+local defaultScreens = hs.screen.allScreens()
+local numberedScreens = {}
 
 for index, screen in pairs(defaultScreens) do
   numberedScreens[index] = screen
@@ -59,4 +60,5 @@ applicationWatcher = hs.application.watcher.new(onApplicationEvent)
 
 applicationWatcher:start()
 
-spoon.Switcher.new('alt', {}, {}, 'main')
+spoon.Switcher.new('cmd', {}, {}, 'main')
+hs.loadSpoon('EmmyLua')

@@ -4,6 +4,7 @@ local utils = {
     a = 0,
     s = 1,
     d = 2,
+    h = 4,
     x = 7,
     q = 12,
     w = 13,
@@ -17,20 +18,13 @@ local utils = {
     m = 46,
     tab = 48,
     ugrave = 50,
+    leftarrow = 123,
+    rightarrow = 124,
   },
 }
 
---[[
-  Returns a table containing all open applications, including only one instance of each
-  Format:
-  ```
-  application = {
-    name = app name
-    image = app image
-    instance = app instance
-  }
-  ```
-]] 
+---Gets all the open apps under a specific format
+---@return {index: {name: string, image: table, instance: table}}
 function utils.getAllOpenApps()
   local windows = hs.window.allWindows()
 
