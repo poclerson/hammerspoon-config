@@ -6,47 +6,29 @@ local switcher = {
   name = 'Switcher',
 }
 
--- Iterates each canvas of each ui
-local function eachUiCanvas(self, fn)
-  eachPair(self.uis, function (uiName, ui)
-    ui:eachCanvas(function (canvasName, canvas)
-      fn(canvasName, canvas, uiName, ui)
-    end)
-  end)
-end
-
-local function show(self)
-  eachPair(self.uis, function (name, ui)
-    ui:showSwitcher()
-    ui:drawSwitcher()
-  end)
-end
-
-local function hide(self)
-  eachUiCanvas(self, function (name, canvas)
-    canvas:hide()
-  end)
-end
-
 local function open(self)
   self.isOpen = true
   self.indexSelected = 1
 
   eachPair(self.uis, function (index, ui)
+    ui:drawSelection()
+    ui:removeAllElements(ui.apps)
+    ui:drawApps()
     ui:refreshAllFrames()
+    ui:showSwitcher()
   end)
-
-  show(self)
 end
 
 local function close(self)
   self.isOpen = false
 
-  eachPair(self.uis, function (name, ui)
+  eachPair(self.uis, function (_, ui)
     ui:removeAllElements(ui.selection)
-  end)
 
-  hide(self)
+    eachPair(ui.switcher, function (_, canvas)
+      canvas:hide()
+    end)
+  end)
 end
 
 local function next(self)
@@ -54,7 +36,7 @@ local function next(self)
   if self.indexSelected > #utils:getAllOpenApps() then
     self.indexSelected = 1
   end
-  eachPair(self.uis, function (name, ui)
+  eachPair(self.uis, function (_, ui)
     ui:drawSelection(self.indexSelected)
   end)
 end
@@ -185,14 +167,13 @@ end
 -- Closes the application selected by the switcher
 function switcher:quitSelected(application)
   eachPair(self.uis, function (index, ui)
-    ui:refreshFrame(ui.apps, application)
-    ui:refreshFrame(ui.selection, application)
-    ui:removeAllElements(ui.background)
     ui:removeAllElements(ui.apps)
-    ui:drawBackground(application)
     ui:drawApps(application)
+    ui:refreshAllFrames(application)
   end)
-  next(self)
+  if self.indexSelected == #utils:getAllOpenApps() then
+    prev(self)
+  end
   application.instance:kill()
 end
 
@@ -274,45 +255,43 @@ end
 ---@param screens table|'main'|'all'? Table containing all `hs.screen` objects the switcher should appear on. 
 ---@return table switcher `Switcher instance`
 function switcher.new(key, keyBinds, uiPrefs, screens)
-  local keyCodes = utils.keyCodes
-
   local defaultKeyBinds = {
-    quitSelected = keyCodes.q,
+    quitSelected = hs.keycodes.map['q'],
     minimizeSelected = {
       __keyBinds = {
-        keyCodes.m,
-        keyCodes.h,
+        hs.keycodes.map['m'],
+        hs.keycodes.map['h'],
       },
     },
-    closeAllWindowsOfSelected = keyCodes.x,
+    closeAllWindowsOfSelected = hs.keycodes.map['x'],
     selectNext = {
       __keyBinds = {
-        keyCodes.tab,
-        keyCodes.rightarrow,
+        hs.keycodes.map['tab'],
+        hs.keycodes.map['right'],
       },
     },
     selectPrev = {
       __keyBinds = {
-        keyCodes.ugrave,
-        keyCodes.leftarrow,
+        hs.keycodes.map['ugrave'],
+        hs.keycodes.map['left'],
       },
     },
-    closeSwitcher = keyCodes.esc,
+    closeSwitcher = hs.keycodes.map['escape'],
     moveSelectedToScreen = {
       main = {
         __keyBinds = {
-          keyCodes.num1,
-          keyCodes.num4,
+          hs.keycodes.map['num1'],
+          hs.keycodes.map['num4'],
         }
       },
-      screen1 = keyCodes.num2,
-      screen2 = keyCodes.num3,
+      screen1 = hs.keycodes.map['num2'],
+      screen2 = hs.keycodes.map['num3'],
     },
     moveSelectedToDirection = {
-      north = keyCodes.w,
-      west = keyCodes.a,
-      south = keyCodes.s,
-      east = keyCodes.d,
+      north = hs.keycodes.map['w'],
+      west = hs.keycodes.map['a'],
+      south = hs.keycodes.map['s'],
+      east = hs.keycodes.map['d'],
     }
   }
 

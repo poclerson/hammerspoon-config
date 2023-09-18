@@ -129,7 +129,7 @@ function ui:drawSelection(index)
   self.selection:replaceElements({
     type = 'rectangle',
     frame = {
-      x =  style.padding / 2 + ((style.applicationWidth + style.padding) * (index - 1)),
+      x =  style.padding / 2 + ((style.applicationWidth + style.padding) * ((index or 1) - 1)),
       y = style.padding / 2,
       w = style.padding + style.applicationWidth,
       h = style.padding + style.applicationWidth,
@@ -160,20 +160,15 @@ function ui:eachCanvas(fn)
   end)
 end
 
-function ui:refreshFrame(canvas, removedApp)
-  canvas:frame(position(self, removedApp))
-end
-
-function ui:refreshAllFrames()
+function ui:refreshAllFrames(removedApp)
   self:eachCanvas(function (name, canvas)
-    self:removeAllElements(canvas)
-    canvas:frame(position(self))
+    canvas:frame(position(self, removedApp))
   end)
 end
 
 function ui:removeAllElements(canvas)
   eachPair(canvas, function ()
-    canvas:removeElement(1)
+    canvas:removeElement()
   end)
 end
 

@@ -60,5 +60,5 @@ applicationWatcher = hs.application.watcher.new(onApplicationEvent)
 
 applicationWatcher:start()
 
-spoon.Switcher.new('cmd', {}, {}, 'main')
+spoon.Switcher.new('cmd', {}, {}, 'all')
 hs.loadSpoon('EmmyLua')
