@@ -1,5 +1,3 @@
-local utils = require('Utils')
-
 local defaultUi = {
   applicationWidth = 100,
   padding = 30,
@@ -42,7 +40,7 @@ local ui = {
 
 local function position(self, removedApp)
   local appAmount = 0
-  eachPair(utils:getAllOpenApps(), function (index, app)
+  hs.fnutils.ieach(getAllOpenApps(), function (app)
     if removedApp and removedApp.name == app.name then
       return
     end
@@ -86,13 +84,13 @@ end
 -- Draws all app icons
 function ui:drawApps(removedApp)
   local applications = {}
-  eachPair(utils:getAllOpenApps(), function (index, app)
+  hs.fnutils.each(getAllOpenApps(), function (app)
     if removedApp and removedApp.name == app.name then
       return
     end
     table.insert(applications, app)
   end)
-  each(
+  hs.fnutils.eachPair(
     applications,
     function(index, app)
       local style = self.style
@@ -180,9 +178,9 @@ function ui.new(prefs, screen)
     prefs = {}
   end
 
-  local prefsWithFallback = map(defaultUi, function (prefName, pref)
+  local prefsWithFallback = hs.fnutils.mapPair(defaultUi, function (prefName, pref)
     if type(pref) == 'table' then
-      return {[prefName] = map(pref, function (componentName, componentPref)
+      return {[prefName] = hs.fnutils.mapPair(pref, function (componentName, componentPref)
         return {[componentName] = prefs[prefName] and prefs[prefName][componentName] or componentPref}
       end)}
     end
@@ -196,9 +194,9 @@ function ui.new(prefs, screen)
     __index = ui
   })
   self.style.height = self.style.padding * 2 + self.style.applicationWidth
-  self.background = hs.canvas.new(position(self, utils:getAllOpenApps()))
-  self.selection = hs.canvas.new(position(self, utils:getAllOpenApps()))
-  self.apps = hs.canvas.new(position(self, utils:getAllOpenApps()))
+  self.background = hs.canvas.new(position(self, getAllOpenApps()))
+  self.selection = hs.canvas.new(position(self, getAllOpenApps()))
+  self.apps = hs.canvas.new(position(self, getAllOpenApps()))
   self.background:level(4)
   self.selection:level(5)
   self.apps:level(6)

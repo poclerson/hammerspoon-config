@@ -1,14 +1,11 @@
+hs.loadSpoon('EmmyLua')
+
 require('lib')
 require('hs.ipc')
-require('Utils')
-
--- Sketchybar
-package.cpath = package.cpath .. ";/Users/" .. os.getenv("USER") .. "/.local/share/sketchybar_lua/?.so"
-os.execute('sketchybar --reload')
 
 MainScreen = hs.screen.find('U28E590')
 
-Screens = map(hs.screen.allScreens(), function (index, screen)
+Screens = hs.fnutils.mapPair(hs.screen.allScreens(), function (index, screen)
   if  #hs.screen.allScreens() == 1 or screen == MainScreen then
     return {['main'] = screen}
   end
@@ -34,15 +31,15 @@ local applicationsLocation = {
 local defaultScreens = hs.screen.allScreens()
 local numberedScreens = {}
 
-for index, screen in pairs(defaultScreens) do
+hs.fnutils.eachPair(defaultScreens, function (index, screen)
   numberedScreens[index] = screen
-end
+end)
 
 ApplicationsScreens = {}
 
-for app, screen in pairs(applicationsLocation) do
+hs.fnutils.eachPair(applicationsLocation, function (app, screen)
   ApplicationsScreens[app] = numberedScreens[screen]
-end
+end)
 
 -- Define global variables
 hs.window.animationDuration = 0
@@ -53,7 +50,7 @@ local spoons = {
   'StatusBar',
 }
 
-each(spoons, function (index, spoon)
+hs.fnutils.each(spoons, function (spoon)
   hs.loadSpoon(spoon)
 end)
 
@@ -66,4 +63,3 @@ applicationWatcher = hs.application.watcher.new(onApplicationEvent)
 applicationWatcher:start()
 
 spoon.Switcher.new('cmd', {}, {}, 'all')
--- hs.loadSpoon('EmmyLua')

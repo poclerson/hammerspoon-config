@@ -1,7 +1,7 @@
 {
   "Lua.diagnostics.disable": [
     "undefined-global",
-    "lowercase-global"
+    "lowercase-global",
   ],
-  "Lua.workspace.library": ["/Users/Pierre-Olivier/.hammerspoon/Spoons/EmmyLua.spoon/annotations"]
+  "Lua.workspace.library": ["/Users/Pierre-Olivier/.hammerspoon/Spoons/EmmyLua.spoon/annotations", "/Users/Pierre-Olivier/.hammerspoon/Spoons/Utils.spoon"],
 }

@@ -1,6 +1,5 @@
 require('lib')
 local switcherUi = require('SwitcherUi')
-local utils = require('Utils')
 
 local switcher = {
   name = 'Switcher',
@@ -10,7 +9,7 @@ local function open(self)
   self.isOpen = true
   self.indexSelected = 1
 
-  eachPair(self.uis, function (index, ui)
+  hs.fnutils.eachPair(self.uis, function (index, ui)
     ui:drawSelection()
     ui:removeAllElements(ui.apps)
     ui:drawApps()
@@ -22,10 +21,10 @@ end
 local function close(self)
   self.isOpen = false
 
-  eachPair(self.uis, function (_, ui)
+  hs.fnutils.eachPair(self.uis, function (_, ui)
     ui:removeAllElements(ui.selection)
 
-    eachPair(ui.switcher, function (_, canvas)
+    hs.fnutils.eachPair(ui.switcher, function (_, canvas)
       canvas:hide()
     end)
   end)
@@ -33,10 +32,10 @@ end
 
 local function next(self)
   self.indexSelected = self.indexSelected + 1
-  if self.indexSelected > #utils:getAllOpenApps() then
+  if self.indexSelected > #getAllOpenApps() then
     self.indexSelected = 1
   end
-  eachPair(self.uis, function (_, ui)
+  hs.fnutils.eachPair(self.uis, function (_, ui)
     ui:drawSelection(self.indexSelected)
   end)
 end
@@ -44,9 +43,9 @@ end
 local function prev(self)
   self.indexSelected = self.indexSelected - 1
   if self.indexSelected < 1 then
-    self.indexSelected = #utils:getAllOpenApps()
+    self.indexSelected = #getAllOpenApps()
   end
-  eachPair(self.uis, function (name, ui)
+  hs.fnutils.eachPair(self.uis, function (name, ui)
     ui:drawSelection(self.indexSelected)
   end)
 end
@@ -63,7 +62,7 @@ local function createUis(self, ui, screens)
     error('ui must be a table')
   end
   local function screenTypes(selectedScreens)
-    return map(selectedScreens, function (index, screen)
+    return hs.fnutils.mapPair(selectedScreens, function (_, screen)
       return {[screen.name and screen:name() or screen] = switcherUi.new(ui, screen)}
     end)
   end
@@ -98,7 +97,7 @@ local function handleState(self, event)
     blockDefault = false
 
     if eventType == hs.eventtap.event.types.keyDown then
-      eachPair(self.actions, function (name, fn)
+      hs.fnutils.eachPair(self.actions, function (name, fn)
         -- If the key is directly assigned to the action
         if shouldActivateAction(self.keyBinds[name], name) then
           fn(self:getSelectedApp())
@@ -108,7 +107,7 @@ local function handleState(self, event)
 
         -- If the action is nested, it has either action parameters or multiple available key binds
         if type(self.keyBinds[name]) == 'table' then
-          eachPair(self.keyBinds[name], function (fnParameter, fnKeyCode)
+          hs.fnutils.eachPair(self.keyBinds[name], function (fnParameter, fnKeyCode)
 
             -- If the action has action parameters
             if shouldActivateAction(fnKeyCode, name) then
@@ -124,7 +123,7 @@ local function handleState(self, event)
 
               -- Choose the table to iterate through depending on the condition
               local keyCodes = fnParameter == '__keyBinds' and fnKeyCode or fnKeyCode['__keyBinds']
-              each(keyCodes, function (index, optionnalKeyCode)
+              hs.fnutils.each(keyCodes, function (optionnalKeyCode)
                 if shouldActivateAction(optionnalKeyCode, name) then
                   fn(self:getSelectedApp(), fnParameter)
                   blockDefault = true
@@ -156,7 +155,7 @@ function switcher:openSelected(application)
       hs.application.open(application.name)
     end
 
-    moveToStart(utils:getAllOpenApps(), function (app)
+    hs.fnutils.moveToStart(getAllOpenApps(), function (app)
       return app.name == application.name
     end)
 
@@ -166,12 +165,12 @@ end
 
 -- Closes the application selected by the switcher
 function switcher:quitSelected(application)
-  eachPair(self.uis, function (index, ui)
+  hs.fnutils.eachPair(self.uis, function (index, ui)
     ui:removeAllElements(ui.apps)
     ui:drawApps(application)
     ui:refreshAllFrames(application)
   end)
-  if self.indexSelected == #utils:getAllOpenApps() then
+  if self.indexSelected == #getAllOpenApps() then
     prev(self)
   end
   application.instance:kill()
@@ -220,7 +219,6 @@ function switcher:moveSelectedToDirection(application, direction)
       return screen:toEast(side)
     end,
   }
-  -- printTable(directions[direction])
   local mainWindow = application.instance:mainWindow()
   mainWindow:moveToScreen(directions[direction](hs.screen.mainScreen()))
   mainWindow:focus()
@@ -246,7 +244,7 @@ function switcher:closeSwitcher()
 end
 
 function switcher:getSelectedApp()
-  return utils:getAllOpenApps()[self.indexSelected]
+  return getAllOpenApps()[self.indexSelected]
 end
 
 ---@param key string? Key necessary for all commands, like `cmd` or `alt`
@@ -300,7 +298,7 @@ function switcher.new(key, keyBinds, uiPrefs, screens)
     isOpen = false,
     indexSelected = 1,
     actions = {},
-    keyBinds = keyBinds and map(defaultKeyBinds, function (action, keyBind)
+    keyBinds = keyBinds and hs.fnutils.mapPair(defaultKeyBinds, function (action, keyBind)
       local customKeyBind = keyBinds[action]
       return {[action] = customKeyBind or keyBind}
     end or defaultKeyBinds)
@@ -342,7 +340,7 @@ function switcher.new(key, keyBinds, uiPrefs, screens)
     return handleState(self, event)
   end)
   self.openHandler:start()
-  eachPair(self.uis, function (index, ui)
+  hs.fnutils.each(self.uis, function (ui)
     ui:drawSwitcher()
   end)
   return self
