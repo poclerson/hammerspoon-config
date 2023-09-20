@@ -2,6 +2,10 @@ require('lib')
 require('hs.ipc')
 require('Utils')
 
+-- Sketchybar
+package.cpath = package.cpath .. ";/Users/" .. os.getenv("USER") .. "/.local/share/sketchybar_lua/?.so"
+os.execute('sketchybar --reload')
+
 MainScreen = hs.screen.find('U28E590')
 
 Screens = map(hs.screen.allScreens(), function (index, screen)
@@ -46,6 +50,7 @@ hs.window.animationDuration = 0
 local spoons = {
   'Window',
   'Switcher',
+  'StatusBar',
 }
 
 each(spoons, function (index, spoon)
@@ -61,4 +66,4 @@ applicationWatcher = hs.application.watcher.new(onApplicationEvent)
 applicationWatcher:start()
 
 spoon.Switcher.new('cmd', {}, {}, 'all')
-hs.loadSpoon('EmmyLua')
+-- hs.loadSpoon('EmmyLua')
