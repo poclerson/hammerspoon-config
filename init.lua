@@ -3,6 +3,9 @@ hs.loadSpoon('EmmyLua')
 require('lib')
 require('hs.ipc')
 
+-- Define global variables
+hs.window.animationDuration = 0
+
 MainScreen = hs.screen.find('U28E590')
 
 Screens = hs.fnutils.mapPair(hs.screen.allScreens(), function (index, screen)
@@ -13,7 +16,7 @@ Screens = hs.fnutils.mapPair(hs.screen.allScreens(), function (index, screen)
 end)
 
 -- Base window layout configuration
-local applicationsLocation = {
+ApplicationsLocation = {
   Spotify = 3,
   Discord = 3,
   Mattermost = 3,
@@ -22,27 +25,6 @@ local applicationsLocation = {
   Hammerspoon = 3,
   Code = 2,
 }
-
---[[
-  Map all the applications location to their respective screen
-  Maps under this format:
-  ApplicationsScreens[applicationName] = screen UUID
-]]
-local defaultScreens = hs.screen.allScreens()
-local numberedScreens = {}
-
-hs.fnutils.eachPair(defaultScreens, function (index, screen)
-  numberedScreens[index] = screen
-end)
-
-ApplicationsScreens = {}
-
-hs.fnutils.eachPair(applicationsLocation, function (app, screen)
-  ApplicationsScreens[app] = numberedScreens[screen]
-end)
-
--- Define global variables
-hs.window.animationDuration = 0
 
 local spoons = {
   'Window',
@@ -62,4 +44,8 @@ applicationWatcher = hs.application.watcher.new(onApplicationEvent)
 
 applicationWatcher:start()
 
-spoon.Switcher.new('cmd', {}, {}, 'all')
+spoon.Switcher.new{
+  key = 'cmd',
+  screens = 'all',
+  type = 'screen'
+}

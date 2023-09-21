@@ -12,8 +12,11 @@ hs.fnutils.eachPair = function (array, fn)
 end
 
 ---Returns executed `fn` for every `array` member
----@param array table
----@param fn function
+---@generic TKey
+---@generic TValue
+---@generic TReturn : table
+---@param array {[TKey]: TValue}
+---@param fn fun(key: TKey, value: TValue): TReturn
 ---@return table
 hs.fnutils.mapPair = function (array, fn)
   local res = {}
@@ -86,8 +89,12 @@ hs.fnutils.moveToStart = function (array, fn)
 end
 
 ---Gets all the open apps under a specific format
+---@param asSet boolean? Defaults to true. If true, there will be no duplicates
 ---@return table
-getAllOpenApps = function ()
+getAllOpenApps = function (asSet)
+  if asSet == nil then
+    asSet = true
+  end
   local windows = hs.window.allWindows()
 
   appsFormatted = {}
@@ -98,9 +105,13 @@ getAllOpenApps = function ()
       name = app:name(),
       image = hs.image.imageFromAppBundle(app:bundleID()),
       instance = app,
+      window = window,
     }
     appsFormatted[index] = appFormatted
   end)
+  if not asSet then
+    return appsFormatted
+  end
   return hs.fnutils.toSet(appsFormatted)
 end
 

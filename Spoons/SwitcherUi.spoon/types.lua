@@ -1,0 +1,13 @@
+---@class SwitcherUi.Component
+---@field fillColor Color?
+---@field radius number?
+---@field strokeWidth number?
+---@field strokeColor Color?
+
+---@class SwitcherUi.Style
+---@field background SwitcherUi.Component
+---@field apps SwitcherUi.Component
+---@field selection SwitcherUi.Component
+---@field height number?
+---@field appWidth number?
+---@field padding number?

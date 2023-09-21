@@ -1,5 +1,5 @@
 local defaultUi = {
-  applicationWidth = 100,
+  appWidth = 100,
   padding = 30,
   background = {
     fillColor = { red = 0, green = 0, blue = 0, alpha = 0.5 },
@@ -7,7 +7,7 @@ local defaultUi = {
     strokeWidth = 0,
     strokeColor = { red = 0, green = 0, blue = 0, alpha = 0 }
   },
-  applications = {
+  apps = {
     fillColor = { red = 0, green = 0, blue = 0 },
     radius = 1,
     strokeWidth = 0,
@@ -21,11 +21,18 @@ local defaultUi = {
   }
 }
 
+---@class SwitcherUi
+---@field switcher Switcher
+---@field screen table|'main'
+---@field background hs.canvas?
+---@field apps hs.canvas?
+---@field selection hs.canvas?
+---@field style SwitcherUi.Style
 local ui = {
   name = 'SwitcherUi',
   components = {
     background = 'background',
-    applications = 'applications',
+    apps = 'apps',
     selection = 'selection',
   },
   generic = {
@@ -38,34 +45,40 @@ local ui = {
   },
 }
 
+---General position the switcher should haven
+---@param self SwitcherUi
+---@param removedApp hs.application?
+---@return table
 local function position(self, removedApp)
   local appAmount = 0
-  hs.fnutils.ieach(getAllOpenApps(), function (app)
+  hs.fnutils.ieach(self.switcher:getCertainOpenApps(), function (app)
     if removedApp and removedApp.name == app.name then
       return
     end
     appAmount = appAmount + 1
   end)
   local horizontalPadding = self.style.padding * (appAmount + 1)
-  local applicationsWidth = self.style.applicationWidth * appAmount
+  local appsWidth = self.style.appWidth * appAmount
   local frame = self:getScreen():frame()
 
   return {
-    w = applicationsWidth + horizontalPadding,
+    w = appsWidth + horizontalPadding,
     h = self.style.height,
-    x = frame.x + frame.w / 2 - (applicationsWidth + horizontalPadding) / 2,
+    x = frame.x + frame.w / 2 - (appsWidth + horizontalPadding) / 2,
     y = frame.y + frame.h / 2 - (self.style.height) / 2,
   }
 end
 
+---Gets the correct screen
+---@return hs.screen
 function ui:getScreen()
   if self.screen == 'main' then
     return hs.screen.mainScreen()
   end
-  return self.screen
+  return self.screen --[[@as hs.screen]]
 end
 
--- Draws the background
+---@param removedApp hs.application?
 function ui:drawBackground(removedApp)
   local component = self.style.background
 
@@ -81,28 +94,28 @@ function ui:drawBackground(removedApp)
   })
 end
 
--- Draws all app icons
+---@param removedApp hs.application?
 function ui:drawApps(removedApp)
-  local applications = {}
-  hs.fnutils.each(getAllOpenApps(), function (app)
+  local apps = {}
+  hs.fnutils.each(self.switcher:getCertainOpenApps(), function (app)
     if removedApp and removedApp.name == app.name then
       return
     end
-    table.insert(applications, app)
+    table.insert(apps, app)
   end)
   hs.fnutils.eachPair(
-    applications,
+    apps,
     function(index, app)
       local style = self.style
-      local component = self.style.applications
+      local component = self.style.apps
 
       self.apps:appendElements({
         type = 'image',
         frame = {
-          x = style.padding + ((style.applicationWidth + style.padding) * (index - 1)),
+          x = style.padding + ((style.appWidth + style.padding) * (index - 1)),
           y = style.padding,
-          w = style.applicationWidth,
-          h = style.applicationWidth,
+          w = style.appWidth,
+          h = style.appWidth,
         },
         flatness = 1,
         image = app.image,
@@ -115,7 +128,7 @@ function ui:drawApps(removedApp)
   )
 end
 
--- Draws the selection rectangle behind the currently selected app
+---@param index number
 function ui:drawSelection(index)
   local style = self.style
   local component = self.style.selection
@@ -127,10 +140,10 @@ function ui:drawSelection(index)
   self.selection:replaceElements({
     type = 'rectangle',
     frame = {
-      x =  style.padding / 2 + ((style.applicationWidth + style.padding) * ((index or 1) - 1)),
+      x =  style.padding / 2 + ((style.appWidth + style.padding) * ((index or 1) - 1)),
       y = style.padding / 2,
-      w = style.padding + style.applicationWidth,
-      h = style.padding + style.applicationWidth,
+      w = style.padding + style.appWidth,
+      h = style.padding + style.appWidth,
     },
     flatness = 1,
     fillColor = component.fillColor,
@@ -140,40 +153,48 @@ function ui:drawSelection(index)
   })
 end
 
-function ui:drawSwitcher(index)
+---@param index number
+function ui:drawComponents(index)
   self:drawBackground()
   self:drawSelection(index or 1)
   self:drawApps()
 end
 
-function ui:showSwitcher()
+function ui:showComponents()
   self:eachCanvas(function (name, canvas)
     canvas:show()
   end)
 end
 
+---@param fn function
 function ui:eachCanvas(fn)
-  eachPair(self.switcher, function (name, canvas)
+  hs.fnutils.eachPair(self.components, function (name, canvas)
     fn(name, canvas)
   end)
 end
 
+---@param removedApp hs.application
 function ui:refreshAllFrames(removedApp)
-  self:eachCanvas(function (name, canvas)
+  self:eachCanvas(function (_, canvas)
     canvas:frame(position(self, removedApp))
   end)
 end
 
+---@param canvas hs.canvas
 function ui:removeAllElements(canvas)
-  eachPair(canvas, function ()
+  hs.fnutils.each(canvas, function ()
     canvas:removeElement()
   end)
 end
 
----@param prefs table? All this `SwitcherUi` instance's default values
----@param screen table|'main' All instances of `hs.screen` the switcher should appear on.
----@return table switcherUi `SwitcherUi` instance 
-function ui.new(prefs, screen)
+---@param switcher Switcher
+---@param prefs SwitcherUi.Style? All this `SwitcherUi` instance's default values
+---@param screen hs.screen|'main' All instances of `hs.screen` the switcher should appear on.
+---@return SwitcherUi switcherUi `SwitcherUi` instance 
+function ui.new(switcher, prefs, screen)
+  if switcher == nil then
+    error('creating a new switcher ui instance requires a switcher instance')
+  end
   if prefs == nil then
     prefs = {}
   end
@@ -188,20 +209,21 @@ function ui.new(prefs, screen)
   end)
 
   local self = setmetatable({
+    switcher = switcher,
     style = prefsWithFallback,
     screen = screen or Screens['main'],
   }, {
     __index = ui
   })
-  self.style.height = self.style.padding * 2 + self.style.applicationWidth
-  self.background = hs.canvas.new(position(self, getAllOpenApps()))
-  self.selection = hs.canvas.new(position(self, getAllOpenApps()))
-  self.apps = hs.canvas.new(position(self, getAllOpenApps()))
+  self.style.height = self.style.padding * 2 + self.style.appWidth
+  self.background = hs.canvas.new(position(self, self.switcher:getCertainOpenApps()))
+  self.selection = hs.canvas.new(position(self, self.switcher:getCertainOpenApps()))
+  self.apps = hs.canvas.new(position(self, self.switcher:getCertainOpenApps()))
   self.background:level(4)
   self.selection:level(5)
   self.apps:level(6)
 
-  self.switcher = {
+  self.components = {
     background = self.background,
     selection = self.selection,
     apps = self.apps,

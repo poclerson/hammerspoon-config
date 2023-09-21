@@ -1,0 +1,12 @@
+---@alias Switcher.Actions 
+---|'quitSelected'
+---|'minimizeSelected'
+---|'closeAllWindowsOfSelected'
+---|'selectNext'
+---|'selectPrev'
+---|'closeSwitcher'
+---|'moveSelectedToScreen'
+---|'moveSelectedToDirection'
+
+---@alias Switcher.NestedKeybind table<'__keyBind', string>
+---@alias Switcher.Keybinds table<Switcher.Actions, string|table>
