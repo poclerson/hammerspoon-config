@@ -1,8 +1,8 @@
+isHeld = false
+
 ---@class WindowPlacer
----@field isHeld boolean
 local win = {
   name = 'Window',
-  isHeld = false,
   applicationsScreens = {}
 }
 
@@ -15,18 +15,20 @@ local function maximizeWindow(window)
   window:setFrame({x=max.x, y=max.y, w=max.w * 92/100, h=max.h})
 end
 
-local function watchEvents()
-  if (win.isHeld) then
-    maximizeWindow(hs.application.frontmostApplication():focusedWindow())
-    win.isHeld = false
+function onLeftMouse(event)
+  local eventType = event:getType()
+  if eventType == hs.eventtap.event.types.leftMouseDown then
+    isHeld = true
+  end
+  if event:getType() == hs.eventtap.event.types.leftMouseUp then
+    if (isHeld) then
+      maximizeWindow(hs.application.frontmostApplication():focusedWindow())
+      isHeld = false
+    end
   end
 end
 
 function win:init()
-  local eventsWatcher = hs.eventtap.new({hs.eventtap.event.types.leftMouseUp}, watchEvents)
-
-  eventsWatcher:start()
-
   local defaultScreens = hs.screen.allScreens()
   local numberedScreens = {}
 
@@ -37,7 +39,9 @@ function win:init()
   hs.fnutils.eachPair(ApplicationsLocation, function (app, screen)
     win.applicationsScreens[app] = numberedScreens[screen]
   end)
+  leftMouseWatcher = hs.eventtap.new({hs.eventtap.event.types.leftMouseUp, hs.eventtap.event.types.leftMouseDown}, onLeftMouse)
 
+  leftMouseWatcher:start()
 end
 
 ---@param name string
@@ -63,11 +67,6 @@ function win:watchApplications (name, event)
     local app = hs.application.get(name)
     if app then
       maximizeWindow(app:focusedWindow())
-      leftClickDownWatcher = hs.eventtap.new(
-        {hs.eventtap.event.types.leftMouseDown},
-        function() win.isHeld = true end
-      )
-      leftClickDownWatcher:start()
     end
   end
 end

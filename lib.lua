@@ -1,9 +1,11 @@
 ---@diagnostic disable: duplicate-set-field, inject-field
 
 ---Executes `fn` for every element of `array` in key-value array
----@param array table
----@param fn function
----@return table
+---@generic TKey
+---@generic TValue
+---@param array {[TKey]: TValue}
+---@param fn fun(key: TKey, value: TValue)
+---@return {[TKey]: TValue}
 hs.fnutils.eachPair = function (array, fn)
   for key, value in pairs(array) do
     fn(key, value)
@@ -31,6 +33,22 @@ hs.fnutils.mapPair = function (array, fn)
       for nestedKey, nestedValue in pairs(fnResult) do
         res[nestedKey] = nestedValue
       end
+    end
+  end
+  return res
+end
+
+---Returns all `array` members that pass the test `fn`
+---@generic TKey
+---@generic TValue
+---@param array {[TKey]: TValue}
+---@param fn fun(key: TKey, value: TValue): boolean
+---@return {[TKey]: TValue}
+hs.fnutils.filterPair = function (array, fn)
+  local res = {}
+  for key, value in pairs(array) do
+    if fn(key, value) then
+      res[key] = value
     end
   end
   return res
@@ -83,14 +101,29 @@ end
 ---@param array table
 ---@param fn function
 hs.fnutils.moveToStart = function (array, fn)
-  removeIfContains(array, fn)
+  hs.fnutils.removeIfContains(array, fn)
 
-  insertIfContains(array, fn)
+  hs.fnutils.insertIfContains(array, fn)
+end
+
+
+-- TODO Cette fn marche pas, il faut trouver un moyen de reordonner une table comme il faut
+-- Mais les index sont deja désordonnés
+---@generic TArray : table
+---@param array TArray
+---@return TArray
+hs.fnutils.reorder = function (array)
+  local res = {}
+  for i = 1, #array, 1 do
+    table.insert(res, value)
+  end
+  -- printTable(res)
+  return res
 end
 
 ---Gets all the open apps under a specific format
 ---@param asSet boolean? Defaults to true. If true, there will be no duplicates
----@return table
+---@return Application[]
 getAllOpenApps = function (asSet)
   if asSet == nil then
     asSet = true

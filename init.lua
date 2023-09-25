@@ -1,4 +1,4 @@
-hs.loadSpoon('EmmyLua')
+-- hs.loadSpoon('EmmyLua')
 
 require('lib')
 require('hs.ipc')
@@ -46,6 +46,6 @@ applicationWatcher:start()
 
 spoon.Switcher.new{
   key = 'cmd',
-  screens = 'all',
+  screens = 'main',
   type = 'screen'
 }

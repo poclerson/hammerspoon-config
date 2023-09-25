@@ -153,7 +153,7 @@ function ui:drawSelection(index)
   })
 end
 
----@param index number
+---@param index number?
 function ui:drawComponents(index)
   self:drawBackground()
   self:drawSelection(index or 1)
