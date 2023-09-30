@@ -44,8 +44,16 @@ applicationWatcher = hs.application.watcher.new(onApplicationEvent)
 
 applicationWatcher:start()
 
-spoon.Switcher.new{
+-- allSwitcher = spoon.Switcher.new{
+--   name = 'all',
+--   key = 'cmd',
+--   screens = 'all',
+--   type = 'system'
+-- }
+
+specificSwitcher = spoon.Switcher.new{
+  name = 'specific',
   key = 'cmd',
-  screens = 'main',
-  type = 'screen'
+  screens = 'all',
+  type = 'system'
 }

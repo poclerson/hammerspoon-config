@@ -46,10 +46,9 @@ local ui = {
 }
 
 ---General position the switcher should haven
----@param self SwitcherUi
 ---@param removedApp hs.application?
 ---@return table
-local function position(self, removedApp)
+function ui:position(removedApp)
   local appAmount = 0
   hs.fnutils.ieach(self.switcher:getCertainOpenApps(), function (app)
     if removedApp and removedApp.name == app.name then
@@ -82,7 +81,7 @@ end
 function ui:drawBackground(removedApp)
   local component = self.style.background
 
-  self.background:frame(position(self, removedApp))
+  self.background:frame(self:position(removedApp))
   self.background:appendElements({
     type = 'rectangle',
     frame = self.generic.fillFrame,
@@ -176,7 +175,7 @@ end
 ---@param removedApp hs.application
 function ui:refreshAllFrames(removedApp)
   self:eachCanvas(function (_, canvas)
-    canvas:frame(position(self, removedApp))
+    canvas:frame(self:position(removedApp))
   end)
 end
 
@@ -216,9 +215,9 @@ function ui.new(switcher, prefs, screen)
     __index = ui
   })
   self.style.height = self.style.padding * 2 + self.style.appWidth
-  self.background = hs.canvas.new(position(self, self.switcher:getCertainOpenApps()))
-  self.selection = hs.canvas.new(position(self, self.switcher:getCertainOpenApps()))
-  self.apps = hs.canvas.new(position(self, self.switcher:getCertainOpenApps()))
+  self.background = hs.canvas.new(self:position(self.switcher:getCertainOpenApps()))
+  self.selection = hs.canvas.new(self:position(self.switcher:getCertainOpenApps()))
+  self.apps = hs.canvas.new(self:position(self.switcher:getCertainOpenApps()))
   self.background:level(4)
   self.selection:level(5)
   self.apps:level(6)

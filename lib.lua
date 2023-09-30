@@ -109,7 +109,7 @@ end
 
 -- TODO Cette fn marche pas, il faut trouver un moyen de reordonner une table comme il faut
 -- Mais les index sont deja désordonnés
----@generic TArray : table
+---@generic TArray: table
 ---@param array TArray
 ---@return TArray
 hs.fnutils.reorder = function (array)
@@ -117,8 +117,22 @@ hs.fnutils.reorder = function (array)
   for i = 1, #array, 1 do
     table.insert(res, value)
   end
-  -- printTable(res)
   return res
+end
+
+---Moves item at position `old` to position `new` in table `array`
+---@generic TKey
+---@param array {[TKey]: any}
+---@param old TKey
+---@param new TKey
+hs.fnutils.shift = function(array, old, new)
+  local value = array[old]
+  if new < old then
+     table.move(array, new, old - 1, new + 1)
+  else    
+     table.move(array, old + 1, new, old) 
+  end
+  array[new] = value
 end
 
 ---Gets all the open apps under a specific format
@@ -130,6 +144,7 @@ getAllOpenApps = function (asSet)
   end
   local windows = hs.window.allWindows()
 
+  ---@type Application[]
   appsFormatted = {}
 
   hs.fnutils.eachPair(windows, function (index, window)
@@ -142,10 +157,13 @@ getAllOpenApps = function (asSet)
     }
     appsFormatted[index] = appFormatted
   end)
+  local appsFiltered = hs.fnutils.filterPair(appsFormatted, function (_, app)
+    return not (app.name == 'Hammerspoon' and not app.window:isStandard())
+  end) --[[@as Application[] ]]
   if not asSet then
-    return appsFormatted
+    return appsFiltered
   end
-  return hs.fnutils.toSet(appsFormatted)
+  return hs.fnutils.toSet(appsFiltered)
 end
 
 ---Prints a table
