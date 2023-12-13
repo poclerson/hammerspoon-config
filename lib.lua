@@ -20,7 +20,7 @@ end
 ---@param array {[TKey]: TValue}
 ---@param fn fun(key: TKey, value: TValue): TReturn
 ---@return table
-hs.fnutils.mapPair = function (array, fn)
+hs.fnutils.mapDeepPair = function (array, fn)
   local res = {}
   for key, value in pairs(array) do
     local fnResult = fn(key, value)
@@ -34,6 +34,25 @@ hs.fnutils.mapPair = function (array, fn)
         res[nestedKey] = nestedValue
       end
     end
+  end
+  return res
+end
+
+---Returns executed `fn` for every `array` member
+---@generic TKey
+---@generic TValue
+---@generic TReturn : table
+---@param array {[TKey]: TValue}
+---@param fn fun(key: TKey, value: TValue): TReturn
+---@return table
+hs.fnutils.mapPair = function (array, fn)
+  local res = {}
+  for key, value in pairs(array) do
+    local fnResult = fn(key, value)
+    if fnResult == nil then
+      error('not a table, nil')
+    end
+    res[key] = fnResult
   end
   return res
 end
@@ -64,6 +83,24 @@ hs.fnutils.toSet = function (array)
     if not hash[value.name] then
       res[#res+1] = value
       hash[value.name] = true
+    end
+  end)
+  return res
+end
+
+---Removes elements with duplicate keys from a table
+---@generic TKey
+---@generic TValue
+---@param array {[TKey]: TValue}
+---@param fn fun(key: TKey, value: TValue): any
+---@return {[TKey]: TValue}
+hs.fnutils.toSetPair = function(array, fn)
+  hash = {}
+  res = {}
+  hs.fnutils.eachPair(array, function (index, value)
+    if not hash[fn(index, value)] then
+      res[#res+1] = value
+      hash[fn(index, value)] = true
     end
   end)
   return res
@@ -106,18 +143,22 @@ hs.fnutils.moveToStart = function (array, fn)
   hs.fnutils.insertIfContains(array, fn)
 end
 
-
--- TODO Cette fn marche pas, il faut trouver un moyen de reordonner une table comme il faut
--- Mais les index sont deja désordonnés
----@generic TArray: table
+---Sorts a numbered table `array`
+---@generic TArray: {[number]: table}
 ---@param array TArray
 ---@return TArray
 hs.fnutils.reorder = function (array)
-  local res = {}
-  for i = 1, #array, 1 do
-    table.insert(res, value)
-  end
-  return res
+  local arrayWithIndexes = hs.fnutils.mapPair(array, function (key, value)
+    value.index = key
+    return value
+  end)
+  table.sort(arrayWithIndexes, function (current, next)
+    if not next then
+      return true
+    end
+    return current.index < next.index
+  end)
+  return arrayWithIndexes
 end
 
 ---Moves item at position `old` to position `new` in table `array`
@@ -148,7 +189,7 @@ getAllOpenApps = function (asSet)
   appsFormatted = {}
 
   hs.fnutils.eachPair(windows, function (index, window)
-    local app = window:application()
+    local app = window:application() --[[@as hs.application]]
     local appFormatted = {
       name = app:name(),
       image = hs.image.imageFromAppBundle(app:bundleID()),
@@ -194,5 +235,33 @@ printTable = function(array, printNested, printStacktrace)
       end)
       print('}')
     end
+  end)
+end
+
+---Converts a string of kebab case to camel case
+---@param str string
+---@return string
+kebabToCamel = function(str)
+  local previousChar
+  local newStr
+  for char in str:gmatch'.' do
+    if char ~= '-' then
+      if previousChar == '-' then
+        newStr = newStr .. string.upper(char)
+      else
+        newStr = (newStr or '') .. char
+      end
+    end
+    previousChar = char
+  end
+  return newStr
+end
+
+---Creates the necessary requires for export functions
+---@param filenames string[] relative path to the files
+---@param path string Absolute path that will go before each file name
+createRequires = function(filenames, path)
+  hs.fnutils.mapPair(filenames, function (_, filename)
+    return {[string.match(kebabToCamel(filename), "/(.*)")] = require(path .. filename)}
   end)
 end

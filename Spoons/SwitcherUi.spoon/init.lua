@@ -28,7 +28,7 @@ local defaultUi = {
 ---@field apps hs.canvas?
 ---@field selection hs.canvas?
 ---@field style SwitcherUi.Style
-local ui = {
+ui = {
   name = 'SwitcherUi',
   components = {
     background = 'background',
@@ -45,146 +45,7 @@ local ui = {
   },
 }
 
----General position the switcher should haven
----@param removedApp hs.application?
----@return table
-function ui:position(removedApp)
-  local appAmount = 0
-  hs.fnutils.ieach(self.switcher:getCertainOpenApps(), function (app)
-    if removedApp and removedApp.name == app.name then
-      return
-    end
-    appAmount = appAmount + 1
-  end)
-  local horizontalPadding = self.style.padding * (appAmount + 1)
-  local appsWidth = self.style.appWidth * appAmount
-  local frame = self:getScreen():frame()
-
-  return {
-    w = appsWidth + horizontalPadding,
-    h = self.style.height,
-    x = frame.x + frame.w / 2 - (appsWidth + horizontalPadding) / 2,
-    y = frame.y + frame.h / 2 - (self.style.height) / 2,
-  }
-end
-
----Gets the correct screen
----@return hs.screen
-function ui:getScreen()
-  if self.screen == 'main' then
-    return hs.screen.mainScreen()
-  end
-  return self.screen --[[@as hs.screen]]
-end
-
----@param removedApp hs.application?
-function ui:drawBackground(removedApp)
-  local component = self.style.background
-
-  self.background:frame(self:position(removedApp))
-  self.background:appendElements({
-    type = 'rectangle',
-    frame = self.generic.fillFrame,
-    flatness = 1,
-    fillColor = component.fillColor,
-    roundedRectRadii = { xRadius = component.radius, yRadius = component.radius},
-    strokeWidth = component.strokeWidth,
-    strokeColor = component.strokeColor,
-  })
-end
-
----@param removedApp hs.application?
-function ui:drawApps(removedApp)
-  local apps = {}
-  hs.fnutils.each(self.switcher:getCertainOpenApps(), function (app)
-    if removedApp and removedApp.name == app.name then
-      return
-    end
-    table.insert(apps, app)
-  end)
-  hs.fnutils.eachPair(
-    apps,
-    function(index, app)
-      local style = self.style
-      local component = self.style.apps
-
-      self.apps:appendElements({
-        type = 'image',
-        frame = {
-          x = style.padding + ((style.appWidth + style.padding) * (index - 1)),
-          y = style.padding,
-          w = style.appWidth,
-          h = style.appWidth,
-        },
-        flatness = 1,
-        image = app.image,
-        fillColor = component.fillColor,
-        roundedRectRadii = { xRadius = component.radius, yRadius = component.radius},
-        strokeWidth = component.strokeWidth,
-        strokeColor = component.strokeColor,
-      })
-    end
-  )
-end
-
----@param index number
-function ui:drawSelection(index)
-  local style = self.style
-  local component = self.style.selection
-
-  self.selection:appendElements({
-    type = 'rectangle',
-    action = 'skip'
-  })
-  self.selection:replaceElements({
-    type = 'rectangle',
-    frame = {
-      x =  style.padding / 2 + ((style.appWidth + style.padding) * ((index or 1) - 1)),
-      y = style.padding / 2,
-      w = style.padding + style.appWidth,
-      h = style.padding + style.appWidth,
-    },
-    flatness = 1,
-    fillColor = component.fillColor,
-    roundedRectRadii = { xRadius = component.radius, yRadius = component.radius},
-    strokeWidth = component.strokeWidth,
-    strokeColor = component.strokeColor,
-  })
-end
-
----@param index number?
-function ui:drawComponents(index)
-  self:drawBackground()
-  self:drawSelection(index or 1)
-  self:drawApps()
-end
-
-function ui:showComponents()
-  self:eachCanvas(function (name, canvas)
-    canvas:show()
-  end)
-end
-
----@param fn function
-function ui:eachCanvas(fn)
-  hs.fnutils.eachPair(self.components, function (name, canvas)
-    fn(name, canvas)
-  end)
-end
-
----@param removedApp hs.application
-function ui:refreshAllFrames(removedApp)
-  self:eachCanvas(function (_, canvas)
-    canvas:frame(self:position(removedApp))
-  end)
-end
-
----@param canvas hs.canvas
-function ui:removeAllElements(canvas)
-  hs.fnutils.each(canvas, function ()
-    canvas:removeElement()
-  end)
-end
+require('Spoons/SwitcherUi.spoon/lib/init')
 
 ---@param switcher Switcher
 ---@param prefs SwitcherUi.Style? All this `SwitcherUi` instance's default values
@@ -198,9 +59,9 @@ function ui.new(switcher, prefs, screen)
     prefs = {}
   end
 
-  local prefsWithFallback = hs.fnutils.mapPair(defaultUi, function (prefName, pref)
+  local prefsWithFallback = hs.fnutils.mapDeepPair(defaultUi, function (prefName, pref)
     if type(pref) == 'table' then
-      return {[prefName] = hs.fnutils.mapPair(pref, function (componentName, componentPref)
+      return {[prefName] = hs.fnutils.mapDeepPair(pref, function (componentName, componentPref)
         return {[componentName] = prefs[prefName] and prefs[prefName][componentName] or componentPref}
       end)}
     end
