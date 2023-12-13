@@ -7,7 +7,6 @@ local filenames = {
   'drawings/remove-all-elements',
   'drawings/show-components',
   'utils/each-canvas',
-  'utils/get-screen',
   'utils/position'
 }
 

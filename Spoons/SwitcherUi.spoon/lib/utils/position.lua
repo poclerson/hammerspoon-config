@@ -11,7 +11,7 @@ function ui:position(removedApp)
   end)
   local horizontalPadding = self.style.padding * (appAmount + 1)
   local appsWidth = self.style.appWidth * appAmount
-  local frame = self:getScreen():frame()
+  local frame = hs.screen.mainScreen():frame()
 
   return {
     w = appsWidth + horizontalPadding,

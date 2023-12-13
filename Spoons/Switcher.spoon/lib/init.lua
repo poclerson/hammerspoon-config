@@ -14,6 +14,4 @@ local filenames = {
   'utils/handle-state'
 }
 
-
-
 return createRequires(filenames, 'Spoons/Switcher.spoon/lib/')
