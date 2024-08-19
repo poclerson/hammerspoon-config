@@ -8,6 +8,8 @@ local filenames = {
   'interactions/open-selected',
   'interactions/prev',
   'interactions/quit-selected',
+  'utils/create-ui',
+  'utils/get-certain-open-apps',
   'utils/get-selected-app',
   'utils/handle-state'
 }

@@ -1,12 +1,22 @@
 ---Open the application selected by the switcher
----@param app Application
+---@param application Application
 ---@return boolean?
-function switcher:openSelected(app)
-  if app.instance:isRunning() then
-    app.instance:activate()
+function switcher:openSelected(application)
+  if application.instance:isRunning() then
+    application.instance:activate()
   else
-    hs.application.open(app.name)
+    hs.application.open(application.name)
   end
 
-  self.cache:bringSelectedToSecond(app)
+  if not self.appsCaches then
+    self.appsCaches = self:getCertainOpenApps()
+  end
+
+  local selectedAppIndex
+  hs.fnutils.eachPair(self.appsCaches, function(index, cacheApp) 
+    if cacheApp.name == application.name then
+      selectedAppIndex = index
+    end
+  end)
+  hs.fnutils.shift(self.appsCaches, selectedAppIndex, 1)
 end

@@ -34,7 +34,7 @@ function switcher:handleState(event)
     return blockDefault
   end
 
-  eachPair(self.actions, function (name, fn)
+  hs.fnutils.eachPair(self.actions, function (name, fn)
     local action = self.keybinds[name]
 
     -- If the key is directly assigned to the action
@@ -49,7 +49,7 @@ function switcher:handleState(event)
       return
     end
 
-    eachPair(action, function (fnParameter, fnKeyCode)
+    hs.fnutils.eachPair(action, function (fnParameter, fnKeyCode)
       -- If the action has action parameters
       if shouldActivateAction(fnKeyCode, keycode, name, self.isOpen) then
         fn(selectedApp, fnParameter)
@@ -67,7 +67,7 @@ function switcher:handleState(event)
       -- Choose the table to iterate through depending on the condition
       local keycodes = fnParameter == '__keybinds' and fnKeyCode or fnKeyCode['__keybinds']
 
-      each(keycodes, function (_, optionnalKeyCode)
+      hs.fnutils.each(keycodes, function (optionnalKeyCode)
         if shouldActivateAction(optionnalKeyCode, keycode, name, self.isOpen) then
           fn(selectedApp, fnParameter)
           blockDefault = true

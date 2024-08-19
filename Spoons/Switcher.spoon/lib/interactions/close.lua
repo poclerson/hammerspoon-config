@@ -3,7 +3,7 @@ function switcher:close()
 
   self.ui:removeAllElements(self.ui.selection)
 
-  eachPair(self.ui.components, function (_, canvas)
+  hs.fnutils.eachPair(self.ui.components, function (_, canvas)
     canvas:hide()
   end)
 end

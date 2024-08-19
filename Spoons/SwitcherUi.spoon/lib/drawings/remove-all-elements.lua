@@ -1,6 +1,6 @@
 ---@param canvas hs.canvas
 function ui:removeAllElements(canvas)
-  each(canvas, function ()
+  hs.fnutils.each(canvas, function ()
     canvas:removeElement()
   end)
 end
