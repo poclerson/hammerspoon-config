@@ -37,7 +37,6 @@ ApplicationsLocation = {
 
 local spoons = {
   'Window',
-  'Switcher',
 }
 
 each(spoons, function (_, spoon)
@@ -57,9 +56,3 @@ end
 applicationWatcher = hs.application.watcher.new(onApplicationEvent)
 
 applicationWatcher:start()
-
-specificSwitcher = spoon.Switcher.new{
-  name = 'specific',
-  key = 'cmd',
-  screens = 'main'
-}
