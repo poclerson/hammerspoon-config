@@ -1,5 +1,3 @@
--- hs.loadSpoon('EmmyLua')
-
 local function searcher(module_name)
   -- Use "/" instead of "." as directory separator
   local path, err = package.searchpath(module_name, package.path, "/")
@@ -19,7 +17,7 @@ hs.window.animationDuration = 0
 
 MainScreen = hs.screen.find('U28E590')
 
-Screens = hs.fnutils.mapPair(hs.screen.allScreens(), function (index, screen)
+Screens = mapPair(hs.screen.allScreens(), function (index, screen)
   if  #hs.screen.allScreens() == 1 or screen == MainScreen then
     return {['main'] = screen}
   end
@@ -42,12 +40,18 @@ local spoons = {
   'Switcher',
 }
 
-hs.fnutils.each(spoons, function (spoon)
+each(spoons, function (_, spoon)
   hs.loadSpoon(spoon)
 end)
 
 local function onApplicationEvent(name, event)
-  spoon.Window:watchApplications(name, event)
+  eachPair(spoon, function (_, currentSpoon)
+    if not currentSpoon or not currentSpoon['watchApplications'] then
+      return
+    end
+    currentSpoon:watchApplications(name, event)
+
+  end)
 end
 
 applicationWatcher = hs.application.watcher.new(onApplicationEvent)

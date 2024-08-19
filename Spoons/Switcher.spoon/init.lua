@@ -10,17 +10,19 @@ require('lib')
 ---@field screens ScreenChoice
 ---@field ui SwitcherUi
 ---@field currentScreen hs.screen
----@field appsCaches Application[]
+---@field cache SwitcherCache
 switcher = {
   name = 'Switcher',
 }
 
 require('Spoons/Switcher.spoon/lib/init')
+hs.loadSpoon('SwitcherCache')
+hs.loadSpoon('SwitcherUi')
 
 ---@param props {name: string, key: string?, keybinds: Switcher.Keybinds?, uiPrefs: SwitcherUi.Style?}
----@return table switcher Switcher instance
+---@return Switcher switcher Switcher instance
 function switcher.new(props)
-  local name, key, keybinds, uiPrefs =
+  local _, key, keybinds, uiPrefs =
     props.name,
     props.key or 'cmd',
     props.keybinds or {},
@@ -66,13 +68,12 @@ function switcher.new(props)
       east = hs.keycodes.map['d'],
     }
   }
-  ---@type Switcher
   local self = setmetatable({
     key = key,
     isOpen = false,
     indexSelected = 1,
     actions = {},
-    keybinds = keybinds and hs.fnutils.mapPair(defaultSwitcher, function (action, keyBind)
+    keybinds = keybinds and mapPair(defaultSwitcher, function (action, keyBind)
       local customKeyBind = keybinds[action]
       return {[action] = customKeyBind or keyBind}
     end or defaultSwitcher),
@@ -106,8 +107,9 @@ function switcher.new(props)
       self:moveSelectedToDirection(application, direction)
     end,
   }
-  self.ui = self:createUi(uiPrefs, hs.screen.mainScreen())
-  print(self.ui)
+
+  self.cache = cache.new(self)
+  self.ui = ui.new(self, uiPrefs)
 
   openHandler = hs.eventtap.new({
     hs.eventtap.event.types.keyDown,
@@ -116,8 +118,10 @@ function switcher.new(props)
   }, function (event)
     return self:handleState(event)
   end)
+
   openHandler:start()
   self.ui:drawComponents()
+
   return self
 end
 

@@ -3,7 +3,7 @@
 ---@return table
 function ui:position(removedApp)
   local appAmount = 0
-  hs.fnutils.ieach(self.switcher:getCertainOpenApps(), function (app)
+  each(self.switcher.cache:get(), function (_, app)
     if removedApp and removedApp.name == app.name then
       return
     end

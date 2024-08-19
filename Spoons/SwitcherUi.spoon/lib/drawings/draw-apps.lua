@@ -1,17 +1,14 @@
 ---@param removedApp hs.application?
 function ui:drawApps(removedApp)
   local apps = {}
-  print(#self.switcher:getCertainOpenApps(), 'certain')
-  if self.switcher.appsCaches then
-    print(#self.switcher.appsCaches, 'cache')
-  end
-  hs.fnutils.each(self.switcher:getCertainOpenApps(), function (app)
+
+  eachPair(self.switcher.cache:get(), function (_, app)
     if removedApp and removedApp:name() == app.name then
       return
     end
     table.insert(apps, app)
   end)
-  hs.fnutils.eachPair(
+  eachPair(
     apps,
     function(index, app)
       local style = self.style

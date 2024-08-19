@@ -32,11 +32,11 @@ function win:init()
   local defaultScreens = hs.screen.allScreens()
   local numberedScreens = {}
 
-  hs.fnutils.eachPair(defaultScreens, function (index, screen)
+  eachPair(defaultScreens, function (index, screen)
     numberedScreens[index] = screen
   end)
 
-  hs.fnutils.eachPair(ApplicationsLocation, function (app, screen)
+  eachPair(ApplicationsLocation, function (app, screen)
     win.applicationsScreens[app] = numberedScreens[screen]
   end)
   leftMouseWatcher = hs.eventtap.new({hs.eventtap.event.types.leftMouseUp, hs.eventtap.event.types.leftMouseDown}, onLeftMouse)

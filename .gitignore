@@ -3,3 +3,4 @@ Spoons/ReloadConfiguration.spoon
 /sketchybar
 **/.DS_Store
 .vscode
+/lua_modules

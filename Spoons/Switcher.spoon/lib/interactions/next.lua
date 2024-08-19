@@ -1,15 +1,11 @@
 function switcher:next()
   if self.isOpen then
     self.indexSelected = self.indexSelected + 1
-    if self.indexSelected > #self:getCertainOpenApps() then
+    if self.indexSelected > #self.cache:get() then
       self.indexSelected = 1
     end
     self.ui:drawSelection(self.indexSelected)
     return
-  end
-
-  if not self.appsCaches then
-    self.appsCaches = self:getCertainOpenApps()
   end
 
   self.isOpen = true

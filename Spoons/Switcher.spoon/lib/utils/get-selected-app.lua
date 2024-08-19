@@ -1,4 +1,4 @@
 ---@return Application?
 function switcher:getSelectedApp() 
-  return self:getCertainOpenApps()[self.indexSelected]
+  return self.cache:get()[self.indexSelected]
 end
