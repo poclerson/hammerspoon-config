@@ -1,6 +1,4 @@
-require('hs/json')
-
-function resizer:getConfig()
+function spoon.Utils.getConfig()
   local json = hs.json.read('config.json')
 
   if not json or type(json) ~= 'table' then

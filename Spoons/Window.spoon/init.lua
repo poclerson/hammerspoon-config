@@ -1,29 +1,45 @@
-require('lib')
-
----@class WindowPlacer
-resizer = {
+---@class Window
+---@field name string
+spoon.Window = {
   name = 'Window',
-  applicationsScreens = {},
-  isHeld = false,
 }
 
 require('Spoons/Window.spoon/lib/init')
 
-function resizer:init()
-  leftMouseWatcher = hs.eventtap.new(
-    {
-      hs.eventtap.event.types.leftMouseUp,
-      hs.eventtap.event.types.leftMouseDown,
-      hs.eventtap.event.types.keyDown,
-    },
-    function (event)
-      resizer:onLeftMouse(event)
+function spoon.Window.init()
+  hs.window.filter.default:subscribe(
+    hs.window.filter.windowFocused,
+    ---@param window hs.window
+    ---@param appName string
+    ---@param event string
+    function(window, appName, event)
+      local fn = spoon.Window[event]
+      if not fn or type(fn) ~= 'function' then return end
+      fn(window)
     end
   )
 
-  leftMouseWatcher:start()
+  local possibleEventKeys = table.keys(Config.window)
+  local eventKeys = {}
 
-  -- Check https://www.hammerspoon.org/docs/hs.eventtap.event.html#newKeyEventSequence for event sequences
+  local possibleEvents = table.each(possibleEventKeys, function (_, possibleKey)
+    local key = hs.eventtap.event.types[possibleKey]
+    if not key then return end
+    table.insert(eventKeys, key)
+  end)
+
+  if not possibleEvents then return end
+
+  local eventsWatcher = hs.eventtap.new(
+    eventKeys,
+    function (event)
+      local type = event:getType()
+      print(type)
+      spoon.Utils.actionDispatcher(nil, Config.window, type)
+    end
+  )
+
+  eventsWatcher:start()
 end
 
-return resizer
+return spoon.Window

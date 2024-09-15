@@ -4,6 +4,8 @@
 ---@field image hs.image
 ---@field window hs.window
 
+---@alias Position { x: number, y: number }
+
 ---@alias ScreenChoice hs.screen|hs.screen[]|'main'|'all'
 
 ---@alias Direction 
@@ -12,4 +14,32 @@
 ---| 'south'
 ---| 'east'
 
----@alias Color {red: number, green: number, blue: number, alpha: number?}
+---@alias Finger
+--- | '3'
+--- | '4'
+--- | '5'
+
+---@alias Color { red: number, green: number, blue: number, alpha: number? }
+
+---@alias Json table<string, string | number | nil | boolean | [string] | table<string, Json | table<string, Json | table<string, Json | table<string, Json>>>>>
+
+---@class Event
+---@field direction Direction?
+
+---@class Window.Place
+---@field name 'place'
+---@field x number?
+---@field y number?
+---@field w number?
+---@field h number?
+---@field duration number?
+
+---@class Window.Move
+---@field name 'move'
+---@field direction Direction?
+---@field duration number?
+
+---@alias EventConfig
+---| Window.Place
+---| Window.Move
+

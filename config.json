@@ -1,7 +1,74 @@
 {
   "window": {
-    "maximizedWidth": 92,
-    "maximizedHeight": 100,
-    "maximizedDuration": 0.2
+    "default": {
+      "w": 100,
+      "h": 100,
+      "duration": 0.2
+    },
+    "maximize": {
+      "w": 100,
+      "h": 100,
+      "duration": 0.2
+    },
+    "windowFocused": {
+      "name": "Window.place",
+      "config": {
+        "w": 100,
+        "h": 100
+      }
+    },
+    "leftMouseUp": {
+      "name": "Window.place",
+      "config": {
+        "w": 100,
+        "h": 100
+      }
+    }
+  },
+  "swipe": {
+    "north": {
+      "3": {
+        "name": "Window.move",
+        "config": {
+          "w": 100,
+          "h": 50,
+          "x": 0,
+          "y": 0
+        }
+      }
+    },
+    "east": {
+      "3": {
+        "name": "Window.move",
+        "config": {
+          "w": 50,
+          "h": 100,
+          "x": 50,
+          "y": 0
+        }
+      }
+    },
+    "south": {
+      "3": {
+        "name": "Window.move",
+        "config": {
+          "w": 100,
+          "h": 50,
+          "x": 0,
+          "y": 50
+        }
+      }
+    },
+    "west": {
+      "3": {
+        "name": "Window.move",
+        "config": {
+          "w": 50,
+          "h": 100,
+          "x": 0,
+          "y": 0
+        }
+      }
+    }
   }
 }

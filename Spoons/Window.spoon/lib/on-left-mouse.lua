@@ -1,7 +1,7 @@
-function resizer:onLeftMouse(event)
+function spoon.Window.onLeftMouse(event)
   local eventType = event:getType()
 
   if eventType == hs.eventtap.event.types.leftMouseUp then
-    resizer:maximizeWindow(hs.application.frontmostApplication():focusedWindow())
+    spoon.Window.place(Config.window.maximize)
   end
 end
