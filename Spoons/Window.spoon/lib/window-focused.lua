@@ -1,4 +1,4 @@
 ---@param window hs.window?
 function spoon.Window.windowFocused(window)
-  spoon.Utils.actionDispatcher(nil, Config.window.windowFocused)
+  spoon.Utils.actionDispatcher({ name = 'windowFocused' }, Config.window.windowFocused)
 end

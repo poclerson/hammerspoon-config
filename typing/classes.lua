@@ -24,6 +24,7 @@
 ---@alias Json table<string, string | number | nil | boolean | [string] | table<string, Json | table<string, Json | table<string, Json | table<string, Json>>>>>
 
 ---@class Event
+---@field name string
 ---@field direction Direction?
 
 ---@class Window.Place

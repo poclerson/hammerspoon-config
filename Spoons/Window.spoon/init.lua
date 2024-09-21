@@ -30,12 +30,12 @@ function spoon.Window.init()
 
   if not possibleEvents then return end
 
-  local eventsWatcher = hs.eventtap.new(
+  eventsWatcher = hs.eventtap.new(
     eventKeys,
     function (event)
       local type = event:getType()
-      print(type)
-      spoon.Utils.actionDispatcher(nil, Config.window, type)
+      local name = hs.eventtap.event.types[type]
+      spoon.Utils.actionDispatcher({ name = name }, Config.window)
     end
   )
 

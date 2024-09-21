@@ -1,6 +1,5 @@
 local filenames = {
   '/place',
-  '/on-left-mouse',
   '/move',
   '/window-focused',
 }
