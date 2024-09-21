@@ -1,5 +1,5 @@
 local filenames = {
-  '/get-config',
+  '/get-action-fn',
 }
 
 return spoon.Utils.createRequires(filenames, 'Spoons/Utils.spoon/lib')

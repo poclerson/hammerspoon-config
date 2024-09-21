@@ -21,10 +21,6 @@ require('hs.ipc')
 -- Define global variables
 hs.window.animationDuration = 0
 
-local globalSpoons = {
-  'Utils',
-}
-
 local spoons = {
   'Utils',
   'Window',

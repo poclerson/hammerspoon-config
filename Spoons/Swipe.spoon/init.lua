@@ -5,6 +5,7 @@
 ---@field directions {[Direction]: Direction}
 ---@field fingers [Finger]
 ---@field touches {[string]: [DistanceReturn]}
+---@field phases [string]
 Swipe = {
   name = 'Swipe',
   type = hs.eventtap.event.types.gesture,
@@ -20,6 +21,7 @@ Swipe = {
     '4',
     '5',
   },
+  phases = { 'began', 'moved', 'stationary', 'ended', 'cancelled' },
   previous = nil,
   touches = {},
 }
@@ -42,7 +44,7 @@ function Swipe:init()
       table.each(touches, function(index, touch)
         
         if
-          not table.some({ 'began', 'moved', 'stationary', 'ended', 'cancelled' }, function (_, value) return touch.phase == value end) or
+          not table.some(Swipe.phases, function (_, value) return touch.phase == value end) or
           not touch or
           not touch.identity
         then
@@ -55,7 +57,7 @@ function Swipe:init()
 
         if touch.phase ~= 'ended' or not direction then return end
 
-        spoon.Utils.actionDispatcher({ direction = direction }, Config.swipe, direction, fingers)
+        spoon.Utils.actionDispatcher({ direction = direction, name = touch.phase }, Config.swipe, direction, fingers)
       end)
     end
   )
