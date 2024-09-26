@@ -1,11 +1,16 @@
 {
+  "events": {
+    "leftMouseUp": {
+      "name": "Window.place",
+      "debug": true,
+      "config": {
+        "w": 100,
+        "h": 100
+      }
+    }
+  },
   "window": {
     "default": {
-      "w": 100,
-      "h": 100,
-      "duration": 0.2
-    },
-    "maximize": {
       "w": 100,
       "h": 100,
       "duration": 0.2
@@ -16,20 +21,22 @@
         "w": 100,
         "h": 100
       }
-    },
-    "leftMouseUp": {
-      "name": "Window.place",
-      "config": {
-        "w": 100,
-        "h": 100
-      }
     }
   },
-  "swipe": {
+  "__temporary__gesturesSpoon": {
     "ended": {
       "north": {
         "3": {
           "name": "Window.move"
+        },
+        "4": {
+          "name": "Window.place",
+          "config": {
+            "w": 100,
+            "h": 50,
+            "x": 0,
+            "y": 0
+          }
         }
       },
       "east": {

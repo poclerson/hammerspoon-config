@@ -1,7 +1,8 @@
 local filenames = {
   '/place',
   '/move',
-  '/window-focused',
+  '/float',
+  '/watch-config-events',
 }
 
 return spoon.Utils.createRequires(filenames, 'Spoons/Window.spoon/lib')

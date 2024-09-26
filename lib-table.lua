@@ -1,24 +1,20 @@
 ---Executes `fn` for every element of `self` in numbered self
 ---@generic TValue
 ---@param fn fun(index: number, value: TValue)
----@return {[number]: TValue}
 function table.each(self, fn)
   for index, value in ipairs(self) do
     fn(index, value)
   end
-  return self
 end
 
 ---Executes `fn` for every element of `self` in key-value self
 ---@generic TKey
 ---@generic TValue
 ---@param fn fun(key: TKey, value: TValue)
----@return {[TKey]: TValue}
 function table.eachPair(self, fn)
   for key, value in pairs(self) do
     fn(key, value)
   end
-  return self
 end
 
 ---Executes `fn` for every element of `self` in numbered self
@@ -198,4 +194,93 @@ function table.revert(self)
     res[tostring(value)] = tostring(key)
   end)
   return res
+end
+
+---@param self table
+---@return boolean
+function table.isEmpty(self)
+  return #self == 0
+end
+
+---@generic TValue
+---@generic TComparedValue
+---@param self [TValue]
+---@param comparisons [TComparedValue]
+---@param fn? fun(comparedKey: number, comparedValue: TComparedValue): TValue
+---@return [TValue]
+function table.intersections(self, comparisons, fn)
+  local common = {}
+  local intersections = {}
+
+  table.each(self, function (_, value)
+    intersections[value] = true
+  end)
+
+  table.each(comparisons, function (key, value)
+    local definitiveValue = value
+    if fn then definitiveValue = fn(key, value) end
+    local isCommon = not not intersections[definitiveValue]
+
+    if not isCommon then return end
+    table.insert(common, definitiveValue)
+    intersections[definitiveValue] = nil
+  end)
+
+  return common
+end
+
+---@generic TKey
+---@generic TValue
+---@generic TComparedKey
+---@generic TComparedValue
+---@param self {[TKey]: TValue}
+---@param comparisons {[TComparedKey]: TComparedValue}
+---@param fn? fun(comparedKey: TComparedKey, comparedValue: TComparedValue): TValue
+---@return {[TKey]: TValue}
+function table.intersectionsPair(self, comparisons, fn)
+  local common = {}
+  local intersections = {}
+
+  table.eachPair(self, function (_, value)
+    intersections[value] = true
+  end)
+
+  table.eachPair(comparisons, function (key, value)
+    local definitiveValue = value
+    if fn then definitiveValue = fn(key, value) end
+    local isCommon = not not intersections[definitiveValue]
+
+    if not isCommon then return end
+    table.insert(common, definitiveValue)
+    intersections[definitiveValue] = nil
+  end)
+
+  return common
+end
+
+---Makes a table's keys its value and vice-versa
+---@generic TValue
+---@param self [TValue]
+---@return {[TValue]: number}
+function table.inverse(self)
+  local inversed = {}
+  table.each(self, function (index, value)
+    inversed[value] = index
+  end)
+
+  return inversed
+end
+
+---Makes a table's keys its value and vice-versa
+---@generic TKey
+---@generic TValue
+---@param self {[TKey]: TValue}
+---@return {[TValue]: TKey}
+function table.inversePair(self)
+  local inversed = {}
+  table.each(self, function (index, value)
+    inversed[value] = index
+  end)
+
+  return inversed
 end

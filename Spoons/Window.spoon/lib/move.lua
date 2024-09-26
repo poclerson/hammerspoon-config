@@ -2,7 +2,7 @@
 ---@param config EventConfig?
 ---@param window hs.window?
 function spoon.Window.move(customEvent, config, window)
-  local default = Config.window.default
+  local default = spoon.Window.config.default
   local safeConfig = config or default
   local windowWithFallback = window or hs.application.frontmostApplication():focusedWindow()
   if not windowWithFallback or not windowWithFallback:isStandard() then return end

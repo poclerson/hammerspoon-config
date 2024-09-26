@@ -12,7 +12,7 @@ end
 ---@param config EventConfig?
 ---@param window hs.window?
 function spoon.Window.place(customEvent, config, window)
-  local default = Config.window.default
+  local default = spoon.Window.config.default
   local safeConfig = config or default
   local safeWindow = window or hs.application.frontmostApplication():focusedWindow()
   if not safeWindow or not safeWindow:isStandard() then return end

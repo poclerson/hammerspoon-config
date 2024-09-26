@@ -1,7 +1,7 @@
 ---@type any
-Config = hs.json.read('config.json')
+config = hs.json.read('config.json')
 
-assert(Config and type(Config) == "table")
+assert(config and type(config) == "table")
 
 local function searcher(module_name)
   -- Use "/" instead of "." as directory separator
@@ -16,6 +16,7 @@ table.insert(package.searchers, searcher)
 
 require('lib-table')
 require('lib-string')
+require('lib-debug')
 require('hs.ipc')
 
 -- Define global variables
@@ -24,7 +25,7 @@ hs.window.animationDuration = 0
 local spoons = {
   'Utils',
   'Window',
-  'Swipe',
+  'Gesture',
 }
 
 table.each(spoons, function (_, spoon)
