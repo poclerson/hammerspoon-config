@@ -2,7 +2,7 @@
 
 ---@param touch table
 ---@return DistanceReturn | nil
-function Swipe.getDistance(touch)
+function spoon.Gesture.getDistance(touch)
   local currentX, currentY = touch.normalizedPosition.x, touch.normalizedPosition.y
   local previousX, previousY = touch.previousNormalizedPosition.x, touch.previousNormalizedPosition.y
   local distanceX, distanceY = currentX - previousX, currentY - previousY
@@ -23,12 +23,12 @@ function Swipe.getDistance(touch)
 end
 
 ---@param distance DistanceReturn
-function Swipe.toDirection(distance)
+function spoon.Gesture.toDirection(distance)
   local directions = {
-    [Swipe.directions.north] = distance.distanceY > 0 and not distance.isHorizontal,
-    [Swipe.directions.east] = distance.distanceX > 0 and distance.isHorizontal,
-    [Swipe.directions.south] = distance.distanceY < 0 and not distance.isHorizontal,
-    [Swipe.directions.west] = distance.distanceX < 0 and distance.isHorizontal,
+    [spoon.Gesture.directions.north] = distance.distanceY > 0 and not distance.isHorizontal,
+    [spoon.Gesture.directions.east] = distance.distanceX > 0 and distance.isHorizontal,
+    [spoon.Gesture.directions.south] = distance.distanceY < 0 and not distance.isHorizontal,
+    [spoon.Gesture.directions.west] = distance.distanceX < 0 and distance.isHorizontal,
   }
 
   local direction = table.findPair(directions, function (_, isDirection) return isDirection end)
@@ -37,11 +37,11 @@ function Swipe.toDirection(distance)
 end
 
 ---@param touch table
-function Swipe.getDirection(touch)
-  local distance = Swipe.getDistance(touch)
+function spoon.Gesture.getDirection(touch)
+  local distance = spoon.Gesture.getDistance(touch)
   if not distance then return nil end
 
-  local direction = Swipe.toDirection(distance)
+  local direction = spoon.Gesture.toDirection(distance)
 
   return direction
 end

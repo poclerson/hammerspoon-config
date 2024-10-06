@@ -5,4 +5,4 @@ local filenames = {
   '/stationary',
 }
 
-return spoon.Utils.createRequires(filenames, 'Spoons/Swipe.spoon/lib')
+return spoon.Utils.createRequires(filenames, 'Spoons/Gesture.spoon/lib')

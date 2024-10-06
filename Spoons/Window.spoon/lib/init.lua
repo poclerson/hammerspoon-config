@@ -1,7 +1,6 @@
 local filenames = {
   '/place',
   '/move',
-  '/float',
   '/watch-config-events',
 }
 

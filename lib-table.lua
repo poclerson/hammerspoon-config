@@ -48,6 +48,78 @@ function table.mapPair(self, fn)
   return res
 end
 
+---@generic TValue
+---@generic TReturn
+---@param self table<number, TValue>
+---@return table<number, TReturn>
+function table.flat(self)
+  local result = {}
+  
+  for _, value in ipairs(self) do
+    if type(value) == "table" then
+      for _, nestedValue in ipairs(value) do
+        table.insert(result, nestedValue)
+      end
+    else
+      table.insert(result, value)
+    end
+  end
+  
+  return result
+end
+
+---@generic TKey
+---@generic TValue
+---@generic TReturn
+---@param self table<TKey, TValue>
+---@return table<TKey, TReturn>
+function table.flatPair(self)
+  local result = {}
+  
+  for key, value in pairs(self) do
+    if type(value) == "table" then
+      for nestedKey, nestedValue in pairs(value) do
+        table.insert(result, nestedKey, nestedValue)
+      end
+    else
+      table.insert(result, key, value)
+    end
+  end
+  
+  return result
+end
+
+---@generic TValue
+---@generic TReturn
+---@param self table<number, TValue>
+---@param fn fun(index: number, value: TValue): [TReturn]
+---@return [TReturn]
+function table.flatMap(self, fn)
+  local result = {}
+    
+  for index, value in ipairs(self) do
+    table.insert(result, fn(index, value))
+  end
+  
+  return table.flat(result)
+end
+
+---@generic TKey
+---@generic TValue
+---@generic TReturn
+---@param self table<TKey, TValue>
+---@param fn fun(key: TKey, value: TValue): [TReturn]
+---@return [TReturn]
+function table.flatMapPair(self, fn)
+  local result = {}
+    
+  for key, value in pairs(self) do
+    table.insert(result, fn(key, value))
+  end
+  
+  return table.flatPair(result)
+end
+
 ---Returns all `self` members that pass the test `fn`
 ---@generic TKey
 ---@generic TValue
@@ -62,6 +134,19 @@ function table.filterPair(self, fn)
     end
   end
   return res
+end
+
+---Finds an `fn` element in tablemeta `self`
+---@generic TValue
+---@param self {[number]: TValue}
+---@param fn fun(key: number, value: TValue): boolean
+---@return number | nil, TValue | nil
+function table.find(self, fn)
+  for key, value in ipairs(self) do
+    if fn(key, value) then
+      return key, value
+    end
+  end
 end
 
 ---Finds an `fn` element in tablemeta `self`
@@ -116,9 +201,9 @@ end
 ---@generic TValue
 ---@param self {[TKey]: TValue}
 ---@param ofValue TValue
----@return TKey
+---@return TKey | nil
 function table.keyOf(self, ofValue)
-  local ofKey
+  local ofKey = nil
   for key, value in pairs(self) do
     if value == ofValue then
       ofKey = key

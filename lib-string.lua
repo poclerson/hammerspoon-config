@@ -1,5 +1,5 @@
 getmetatable('').__index = getmetatable('').__index or {}
-local string = getmetatable('').__index
+string = getmetatable('').__index
 
 ---@param self string
 ---@param str string

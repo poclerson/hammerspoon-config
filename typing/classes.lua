@@ -26,6 +26,11 @@
 ---@class Event
 ---@field name string
 ---@field direction Direction?
+---@field hsEvent (hs.eventtap.event | nil)?
+
+---@alias EventConfig
+---| Window.Place
+---| Window.Move
 
 ---@class Window.Place
 ---@field name 'place'
@@ -40,7 +45,18 @@
 ---@field direction Direction?
 ---@field duration number?
 
----@alias EventConfig
----| Window.Place
----| Window.Move
+---@alias ActionTypes
+---| 'keyboard'
+---| 'gesture'
+---| 'mouse'
+---| 'window'
+---| 'default'
+
+---@class Action
+---@field name string?
+---@field config EventConfig?
+---@field debug boolean?
+
+---@class KeyboardAction : Action
+---@field keys table<number, string>
 

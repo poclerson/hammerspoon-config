@@ -1,7 +1,26 @@
+---@class ActionSerializer
+---@field handler? fun(event: Event, action: Action): boolean
+---@field verifier? fun(event: Event, action: Action): boolean
+---@field types? table<number, number>
+
 ---@class Utils
----@field name string
+---@field actionsSerializerConfig {[ActionTypes]: ActionSerializer}
 spoon.Utils = {
   name = 'Utils',
+  actionsSerializerConfig = {},
+}
+
+spoon.Utils.actionsSerializerConfig = {
+  keyboard = { 
+    verifier = function (event, action)
+      return not not (spoon.Utils.isKeyboardAction(event, action) and spoon.Utils.isKeyboardEvent(event))
+    end,
+    types = {
+      hs.eventtap.event.types['keyUp'],
+      hs.eventtap.event.types['keyDown'],
+      hs.eventtap.event.types['flagsChanged'],
+    },
+  },
 }
 
 ---Creates the necessary requires for export functions

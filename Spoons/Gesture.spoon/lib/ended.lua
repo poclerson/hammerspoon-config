@@ -1,5 +1,5 @@
-function Swipe.ended(finalTouch)
-  local distances = Swipe.touches[finalTouch.identity]
+function spoon.Gesture.ended(finalTouch)
+  local distances = spoon.Gesture.touches[finalTouch.identity]
   
   if not distances then return end
 
@@ -13,9 +13,9 @@ function Swipe.ended(finalTouch)
   local absoluteX, absoluteY = math.abs(x), math.abs(y)
   local isHorizontal = 16 * absoluteX > 9 * absoluteY
 
-  local direction = Swipe.toDirection({ distanceX = x, distanceY = y, isHorizontal = isHorizontal })
+  local direction = spoon.Gesture.toDirection({ distanceX = x, distanceY = y, isHorizontal = isHorizontal })
 
-  Swipe.touches = {}
+  spoon.Gesture.touches = {}
 
   return {
     name = 'ended',

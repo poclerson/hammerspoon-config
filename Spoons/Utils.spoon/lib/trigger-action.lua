@@ -1,12 +1,12 @@
 ---@param name string
----@return (fun(event: Event?, config: EventConfig): boolean) | nil
-function spoon.Utils.getActionFn(name)
+---@return (fun(event: Event, action: Action): boolean) | nil
+function getActionFn(name)
   local steps = name:split('.')
   local spoonName = steps[1]
 
   if spoonName:startswith('hs') then
     local hsPath = table.remove(steps, 1)
-    local fn = table.get(hs, table.concat(hsPath, '.'))
+    local fn = table.get(hs --[[@as table]], table.concat(hsPath, '.'))
 
     return fn
   end
@@ -17,4 +17,13 @@ function spoon.Utils.getActionFn(name)
   local fn = loadedSpoon[functionName]
 
   return fn
+end
+
+---@param event Event
+---@param action Action
+function spoon.Utils.triggerAction(event, action)
+  local actionFn = getActionFn(action.name)
+  if not actionFn or type(actionFn) ~="function" then return false end
+
+  return actionFn(event, action)
 end

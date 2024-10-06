@@ -1,12 +1,11 @@
 {
   "events": {
-    "leftMouseUp": {
+    "keyDown": {
       "name": "Window.place",
-      "debug": true,
-      "config": {
-        "w": 100,
-        "h": 100
-      }
+      "keys": ["cmd", "alt", "shift", "f"]
+    },
+    "leftMouseUp": {
+      "name": "Window.place"
     }
   },
   "window": {

@@ -8,14 +8,14 @@ function safeNumber(maybeDimension, fallbackDimension)
 end
 
 ---Applies `config` to `window`. The window will fallback to the frontmost application's window
----@param customEvent Event?
----@param config EventConfig?
+---@param event Event
+---@param action Action
 ---@param window hs.window?
-function spoon.Window.place(customEvent, config, window)
+function spoon.Window.place(event, action, window)
   local default = spoon.Window.config.default
-  local safeConfig = config or default
+  local safeConfig = action.config or default
   local safeWindow = window or hs.application.frontmostApplication():focusedWindow()
-  if not safeWindow or not safeWindow:isStandard() then return end
+  if not safeWindow or not safeWindow:isStandard() then return false end
 
   local frame = safeWindow:screen():frame()
 
@@ -33,4 +33,5 @@ function spoon.Window.place(customEvent, config, window)
   )
 
   safeWindow:setFrame(rect, duration)
+  return true
 end
