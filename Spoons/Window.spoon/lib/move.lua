@@ -2,8 +2,6 @@
 ---@param action Action
 ---@param window hs.window?
 function spoon.Window.move(event, action, window)
-  print('window.move')
-  inspect(action)
   local default = spoon.Window.config.default
   local safeConfig = action.config or default
   local windowWithFallback = window or hs.application.frontmostApplication():focusedWindow()
