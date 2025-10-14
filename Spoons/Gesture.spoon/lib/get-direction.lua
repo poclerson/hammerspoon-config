@@ -25,10 +25,10 @@ end
 ---@param distance DistanceReturn
 function spoon.Gesture.toDirection(distance)
   local directions = {
-    [spoon.Gesture.directions.north] = distance.distanceY > 0 and not distance.isHorizontal,
-    [spoon.Gesture.directions.east] = distance.distanceX > 0 and distance.isHorizontal,
-    [spoon.Gesture.directions.south] = distance.distanceY < 0 and not distance.isHorizontal,
-    [spoon.Gesture.directions.west] = distance.distanceX < 0 and distance.isHorizontal,
+    [consts.directions.north] = distance.distanceY > 0 and not distance.isHorizontal,
+    [consts.directions.east] = distance.distanceX > 0 and distance.isHorizontal,
+    [consts.directions.south] = distance.distanceY < 0 and not distance.isHorizontal,
+    [consts.directions.west] = distance.distanceX < 0 and distance.isHorizontal,
   }
 
   local direction = table.findPair(directions, function (_, isDirection) return isDirection end)

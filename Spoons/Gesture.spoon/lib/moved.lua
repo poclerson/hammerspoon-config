@@ -1,4 +1,3 @@
-
 ---@param touch table
 function spoon.Gesture.moved(touch)
   local distance = spoon.Gesture.getDistance(touch)

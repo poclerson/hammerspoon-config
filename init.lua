@@ -18,6 +18,7 @@ require('lib-table')
 require('lib-string')
 require('lib-debug')
 require('hs.ipc')
+require('consts')
 
 -- Define global variables
 hs.window.animationDuration = 0
