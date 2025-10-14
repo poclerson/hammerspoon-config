@@ -1,29 +1,18 @@
-require('lib')
-
----@class WindowPlacer
-resizer = {
+---### Window
+---#### Config
+---Allows to use any event in `hs.window.filter`
+---@class Window
+---@field name string
+---@field config table
+spoon.Window = {
   name = 'Window',
-  applicationsScreens = {},
-  isHeld = false,
+  config = config.window
 }
 
 require('Spoons/Window.spoon/lib/init')
 
-function resizer:init()
-  leftMouseWatcher = hs.eventtap.new(
-    {
-      hs.eventtap.event.types.leftMouseUp,
-      hs.eventtap.event.types.leftMouseDown,
-      hs.eventtap.event.types.keyDown,
-    },
-    function (event)
-      resizer:onLeftMouse(event)
-    end
-  )
-
-  leftMouseWatcher:start()
-
-  -- Check https://www.hammerspoon.org/docs/hs.eventtap.event.html#newKeyEventSequence for event sequences
+function spoon.Window.init()
+  spoon.Window.watchConfigEvents(spoon.Window.config)
 end
 
-return resizer
+return spoon.Window

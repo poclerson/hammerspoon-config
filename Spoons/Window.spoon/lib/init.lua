@@ -1,8 +1,7 @@
 local filenames = {
-  '/maximize',
-  '/on-left-mouse',
-  '/get-config',
-  '/move'
+  '/place',
+  '/move',
+  '/watch-config-events',
 }
 
-return createRequires(filenames, 'Spoons/Window.spoon/lib')
+return spoon.Utils.createRequires(filenames, 'Spoons/Window.spoon/lib')

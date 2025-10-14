@@ -1,22 +1,11 @@
 {
-  "events": {
-    "keyDown": {
-      "name": "Window.place",
-      "keys": ["cmd", "alt", "shift", "f"]
-    },
-    "leftMouseUp": {
-      "name": "Window.place",
-      "config": {
-        "w": 100,
-        "h": 100,
-        "x": 0,
-        "y": 0,
-        "duration": 0.2
-      }
-    }
-  },
   "window": {
     "default": {
+      "w": 100,
+      "h": 100,
+      "duration": 0.2
+    },
+    "maximize": {
       "w": 100,
       "h": 100,
       "duration": 0.2
@@ -27,9 +16,16 @@
         "w": 100,
         "h": 100
       }
+    },
+    "leftMouseUp": {
+      "name": "Window.place",
+      "config": {
+        "w": 100,
+        "h": 100
+      }
     }
   },
-  "__temporary__gesturesSpoon": {
+  "swipe": {
     "ended": {
       "north": {
         "3": {
@@ -48,16 +44,43 @@
       "east": {
         "3": {
           "name": "Window.move"
+        },
+        "4": {
+          "name": "Window.place",
+          "config": {
+            "w": 50,
+            "h": 100,
+            "x": 50,
+            "y": 0
+          }
         }
       },
       "south": {
         "3": {
           "name": "Window.move"
+        },
+        "4": {
+          "name": "Window.place",
+          "config": {
+            "w": 100,
+            "h": 50,
+            "x": 0,
+            "y": 50
+          }
         }
       },
       "west": {
         "3": {
           "name": "Window.move"
+        },
+        "4": {
+          "name": "Window.place",
+          "config": {
+            "w": 50,
+            "h": 100,
+            "x": 0,
+            "y": 0
+          }
         }
       }
     }
