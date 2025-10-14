@@ -5,7 +5,14 @@
       "keys": ["cmd", "alt", "shift", "f"]
     },
     "leftMouseUp": {
-      "name": "Window.place"
+      "name": "Window.place",
+      "config": {
+        "w": 100,
+        "h": 100,
+        "x": 0,
+        "y": 0,
+        "duration": 0.2
+      }
     }
   },
   "window": {
