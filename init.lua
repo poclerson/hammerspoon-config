@@ -26,7 +26,8 @@ hs.window.animationDuration = 0
 local spoons = {
   'Utils',
   'Window',
-  'Gesture',
+  -- Comment gesture since it's crashing Utils after around 10 secs every restart
+  -- 'Gesture',
   -- Uncomment to load EmmyLua Hammerspoon type annotations
   -- Loading EmmyLua on every startup slows all HS functions and can make spoons appear to not be working
   -- 'EmmyLua',
