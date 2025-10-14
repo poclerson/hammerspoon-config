@@ -27,6 +27,7 @@ local spoons = {
   'Utils',
   'Window',
   'Gesture',
+  'EmmyLua',
 }
 
 table.each(spoons, function (_, spoon)
