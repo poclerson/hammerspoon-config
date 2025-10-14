@@ -1,65 +1,7 @@
 {
-  "events": {
-    "keyDown": {
-      "name": "Window.place",
-      "keys": ["cmd", "alt", "shift", "f"]
-    },
-    "leftMouseUp": {
-      "name": "Window.place",
-      "config": {
-        "w": 100,
-        "h": 100,
-        "x": 0,
-        "y": 0,
-        "duration": 0.2
-      }
-    }
-  },
   "window": {
-    "default": {
-      "w": 100,
-      "h": 100,
-      "duration": 0.2
-    },
-    "windowFocused": {
-      "name": "Window.place",
-      "config": {
-        "w": 100,
-        "h": 100
-      }
-    }
-  },
-  "__temporary__gesturesSpoon": {
-    "ended": {
-      "north": {
-        "3": {
-          "name": "Window.move"
-        },
-        "4": {
-          "name": "Window.place",
-          "config": {
-            "w": 100,
-            "h": 50,
-            "x": 0,
-            "y": 0
-          }
-        }
-      },
-      "east": {
-        "3": {
-          "name": "Window.move"
-        }
-      },
-      "south": {
-        "3": {
-          "name": "Window.move"
-        }
-      },
-      "west": {
-        "3": {
-          "name": "Window.move"
-        }
-      }
-    }
+    "maximizedWidth": 92,
+    "maximizedHeight": 100,
+    "maximizedDuration": 0.2
   }
 }
