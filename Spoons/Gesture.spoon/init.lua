@@ -43,7 +43,8 @@ function spoon.Gesture:init()
     end
   )
 
-  watcher:start()
+  -- Not working right now
+  -- watcher:start()
 end
 
 return spoon.Gesture
