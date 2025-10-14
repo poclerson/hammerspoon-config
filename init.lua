@@ -27,7 +27,9 @@ local spoons = {
   'Utils',
   'Window',
   'Gesture',
-  'EmmyLua',
+  -- Uncomment to load EmmyLua Hammerspoon type annotations
+  -- Loading EmmyLua on every startup slows all HS functions and can make spoons appear to not be working
+  -- 'EmmyLua',
 }
 
 table.each(spoons, function (_, spoon)
