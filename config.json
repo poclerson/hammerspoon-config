@@ -23,25 +23,29 @@
       "up": {
         "name": "Window.move",
         "config": {
-          "direction": "north"
+          "direction": "north",
+          "duration": 0
         }
       },
       "down": {
         "name": "Window.move",
         "config": {
-          "direction": "south"
+          "direction": "south",
+          "duration": 0
         }
       },
       "left": {
         "name": "Window.move",
         "config": {
-          "direction": "west"
+          "direction": "west",
+          "duration": 0
         }
       },
       "right": {
         "name": "Window.move",
         "config": {
-          "direction": "east"
+          "direction": "east",
+          "duration": 0
         }
       }
     }
