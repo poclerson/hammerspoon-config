@@ -20,3 +20,4 @@ require('hs.ipc')
 hs.window.animationDuration = 0
 
 hs.loadSpoon('Window')
+hs.loadSpoon('Gesture')

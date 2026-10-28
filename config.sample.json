@@ -14,6 +14,37 @@
       }
     }
   },
+  "gestures": {
+    "enabled": true,
+    "fingers": 4,
+    "threshold": 0.15,
+    "actions": {
+      "up": {
+        "name": "Window.move",
+        "config": {
+          "direction": "north"
+        }
+      },
+      "down": {
+        "name": "Window.move",
+        "config": {
+          "direction": "south"
+        }
+      },
+      "left": {
+        "name": "Window.move",
+        "config": {
+          "direction": "west"
+        }
+      },
+      "right": {
+        "name": "Window.move",
+        "config": {
+          "direction": "east"
+        }
+      }
+    }
+  },
   "window": {
     "default": {
       "w": 100,
