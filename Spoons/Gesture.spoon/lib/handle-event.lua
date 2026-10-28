@@ -1,4 +1,5 @@
 local gesture <const> = hs.eventtap.event.types.gesture
+local scrollWheel <const> = hs.eventtap.event.types.scrollWheel
 
 local directions = {
   up = 'north',
@@ -62,18 +63,38 @@ function spoon.Gesture.trigger(direction)
 end
 
 ---@param event hs.eventtap.event
+---@return number
+local function getEventType(event)
+  local eventType = event:getType(true)
+  if eventType == nil then return event:getType() end
+
+  return eventType
+end
+
+---@param event hs.eventtap.event
 ---@return boolean
 function spoon.Gesture.handleEvent(event)
   local config = spoon.Gesture.config
   if type(config) ~= 'table' then return false end
-  if event:getType(true) ~= gesture then return false end
+
+  local swipe = spoon.Gesture.swipe
+  local fingers = config.fingers or 4
+  local consume = config.consume ~= false
+  local eventType = getEventType(event)
+
+  if eventType == scrollWheel then
+    return consume and swipe:isScrollLocked()
+  end
+
+  if eventType ~= gesture then return false end
 
   local touches = event:getTouches()
   if type(touches) ~= 'table' then return false end
-  if #touches ~= (config.fingers or 4) then return false end
+
+  if #touches ~= fingers then return false end
   if not hasPositions(touches) then return false end
 
-  local swipe = spoon.Gesture.swipe
+  swipe:lockScroll()
 
   if swipe:none(touches) then
     swipe:set(touches)

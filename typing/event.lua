@@ -37,6 +37,7 @@
 
 ---@class Gesture.Config
 ---@field enabled boolean?
+---@field consume boolean?
 ---@field fingers number?
 ---@field threshold number?
 ---@field actions table<string, Gesture.Action>?

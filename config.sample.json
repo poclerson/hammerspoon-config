@@ -16,6 +16,7 @@
   },
   "gestures": {
     "enabled": true,
+    "consume": true,
     "fingers": 4,
     "threshold": 0.15,
     "actions": {

@@ -5,6 +5,12 @@
 ---@field size number
 ---@field direction string?
 ---@field distance number
+---@field scrollLockUntil number
+
+---@return number
+local function now()
+  return hs.timer.secondsSinceEpoch()
+end
 
 ---@param self Gesture.Swipe
 function spoon.Gesture.swipe:clear()
@@ -13,6 +19,18 @@ function spoon.Gesture.swipe:clear()
   self.direction = nil
   self.distance = 0
   self.triggered = false
+end
+
+---@param self Gesture.Swipe
+---@param timeout number?
+function spoon.Gesture.swipe:lockScroll(timeout)
+  self.scrollLockUntil = now() + (timeout or 0.6)
+end
+
+---@param self Gesture.Swipe
+---@return boolean
+function spoon.Gesture.swipe:isScrollLocked()
+  return now() < self.scrollLockUntil
 end
 
 ---@param self Gesture.Swipe
