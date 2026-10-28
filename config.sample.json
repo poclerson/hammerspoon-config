@@ -1,0 +1,31 @@
+{
+  "events": {
+    "keyDown": {
+      "name": "Window.place",
+      "keys": ["cmd", "alt", "shift", "f"]
+    },
+    "leftMouseUp": {
+      "name": "Window.place",
+      "config": {
+        "w": 100,
+        "h": 100,
+        "x": 0,
+        "y": 0
+      }
+    }
+  },
+  "window": {
+    "default": {
+      "w": 100,
+      "h": 100,
+      "duration": 0.2
+    },
+    "windowFocused": {
+      "name": "Window.place",
+      "config": {
+        "w": 100,
+        "h": 100
+      }
+    }
+  }
+}
