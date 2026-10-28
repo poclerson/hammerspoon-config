@@ -14,19 +14,9 @@ end
 
 table.insert(package.searchers, searcher)
 
-require('lib-table')
-require('lib-string')
 require('hs.ipc')
-require('consts')
 
 -- Define global variables
 hs.window.animationDuration = 0
 
-local spoons = {
-  'Utils',
-  'Window',
-}
-
-table.each(spoons, function (_, spoon)
-  hs.loadSpoon(spoon)
-end)
+hs.loadSpoon('Window')

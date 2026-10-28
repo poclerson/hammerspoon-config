@@ -2,13 +2,14 @@
 ---@field name string
 ---@field direction Directions?
 ---@field hsEvent (hs.eventtap.event | nil)?
+---@field window (hs.window | nil)?
 
 ---@alias EventConfig
 ---| Window.Place
 ---| Window.Move
 
 ---@class Window.Place
----@field name 'place'
+---@field name 'Window.place'
 ---@field x number?
 ---@field y number?
 ---@field w number?
@@ -16,15 +17,18 @@
 ---@field duration number?
 
 ---@class Window.Move
----@field name 'move'
+---@field name 'Window.move'
 ---@field direction Directions?
 ---@field duration number?
 
----@alias ActionTypes
----| 'keyboard'
+---@alias Directions
+---| 'north'
+---| 'east'
+---| 'south'
+---| 'west'
 
 ---@class Action
----@field name string?
+---@field name string
 ---@field config EventConfig?
 ---@field debug boolean?
 

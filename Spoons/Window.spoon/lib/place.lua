@@ -1,29 +1,20 @@
-require('hs/json')
-
----@param maybeDimension unknown
----@param fallbackDimension number
----@return number
-function safeNumber(maybeDimension, fallbackDimension)
-  return (maybeDimension and type(maybeDimension) == 'number') and maybeDimension or fallbackDimension
-end
-
----Applies `config` to `window`. The window will fallback to the frontmost application's window
 ---@param event Event
 ---@param action Action
 ---@param window hs.window?
+---@return boolean
 function spoon.Window.place(event, action, window)
   local default = spoon.Window.config.default
-  local safeConfig = action.config or default
-  local safeWindow = window or hs.application.frontmostApplication():focusedWindow()
-  if not safeWindow or not safeWindow:isStandard() then return false end
+  local config = action.config or default
+  local target = spoon.Window.getTargetWindow(event, window)
+  if not target or not target:isStandard() then return false end
 
-  local frame = safeWindow:screen():frame()
+  local frame = target:screen():frame()
 
-  local x = safeConfig.x or default.x or 0
-  local y = safeConfig.y or default.y or 0
-  local w = safeConfig.w or default.w or 100
-  local h = safeConfig.h or default.h or 100
-  local duration = safeConfig.duration or default.duration or 0
+  local x = config.x or default.x or 0
+  local y = config.y or default.y or 0
+  local w = config.w or default.w or 100
+  local h = config.h or default.h or 100
+  local duration = config.duration or default.duration or 0
 
   local rect = hs.geometry.rect(
     frame.x + x * frame.w / 100,
@@ -32,6 +23,6 @@ function spoon.Window.place(event, action, window)
     h * frame.h / 100
   )
 
-  safeWindow:setFrame(rect, duration)
+  target:setFrame(rect, duration)
   return true
 end

@@ -1,22 +1,21 @@
 ---@param event Event?
 ---@param action Action
 ---@param window hs.window?
+---@return boolean
 function spoon.Window.move(event, action, window)
   local default = spoon.Window.config.default
-  local safeConfig = action.config or default
-  local windowWithFallback = window or hs.application.frontmostApplication():focusedWindow()
-  if not windowWithFallback or not windowWithFallback:isStandard() then return end
+  local config = action.config
+  local target = spoon.Window.getTargetWindow(event, window)
+  if not target or not target:isStandard() then return false end
 
-  local direction = safeConfig.direction or (event and event.direction) or default.direction
+  local direction = (config and config.direction) or (event and event.direction) or default.direction
+  if not direction then return false end
 
-  local duration = safeConfig.duration or default.duration or 0
-  if not direction then return end
+  local duration = (config and config.duration) or default.duration or 0
+  local moveFnName = 'moveOneScreen' .. direction:sub(1, 1):upper() .. direction:sub(2)
+  local moveFn = target[moveFnName]
 
-  local moveFnName = 'moveOneScreen' .. direction:firstToUpper()
-  ---@type hs.window:moveOneScreenNorth | nil
-  local moveFn = windowWithFallback[moveFnName]
-
-  if not moveFn or type(moveFn) ~= 'function' then return false end
-  moveFn(windowWithFallback, false, true, duration)
+  if type(moveFn) ~= 'function' then return false end
+  moveFn(target, false, true, duration)
   return true
 end
