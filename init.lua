@@ -16,7 +16,6 @@ table.insert(package.searchers, searcher)
 
 require('lib-table')
 require('lib-string')
-require('lib-debug')
 require('hs.ipc')
 require('consts')
 
@@ -26,11 +25,6 @@ hs.window.animationDuration = 0
 local spoons = {
   'Utils',
   'Window',
-  -- Comment gesture since it's crashing Utils after around 10 secs every restart
-  -- 'Gesture',
-  -- Uncomment to load EmmyLua Hammerspoon type annotations
-  -- Loading EmmyLua on every startup slows all HS functions and can make spoons appear to not be working
-  -- 'EmmyLua',
 }
 
 table.each(spoons, function (_, spoon)

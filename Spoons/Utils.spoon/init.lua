@@ -36,7 +36,6 @@ require('Spoons/Utils.spoon/lib/init')
 
 function spoon.Utils.init()
   spoon.Utils.watchConfigEvents(config.events)
-  spoon.Utils.watchConfigEvents(config.gestures)
 end
 
 return spoon.Utils

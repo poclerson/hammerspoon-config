@@ -22,10 +22,6 @@
 
 ---@alias ActionTypes
 ---| 'keyboard'
----| 'gesture'
----| 'mouse'
----| 'window'
----| 'default'
 
 ---@class Action
 ---@field name string?
