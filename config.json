@@ -51,6 +51,11 @@
       }
     }
   },
+  "windowSwitcher": {
+    "enabled": true,
+    "modifiers": ["alt"],
+    "key": "tab"
+  },
   "window": {
     "default": {
       "w": 100,
