@@ -35,6 +35,11 @@
 ---@class KeyboardAction : Action
 ---@field keys table<number, string>
 
+---@class WindowSwitcher.Config
+---@field enabled boolean?
+---@field modifiers string[]?
+---@field key string | number?
+
 ---@class Gesture.Config
 ---@field enabled boolean?
 ---@field consume boolean?
