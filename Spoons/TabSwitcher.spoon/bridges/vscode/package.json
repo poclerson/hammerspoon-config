@@ -1,0 +1,15 @@
+{
+  "name": "tab-switcher-bridge",
+  "displayName": "Tab Switcher Bridge",
+  "description": "Local HTTP bridge for the Hammerspoon TabSwitcher spoon.",
+  "version": "1.0.0",
+  "publisher": "local",
+  "engines": {
+    "vscode": "^1.80.0"
+  },
+  "activationEvents": [
+    "onStartupFinished"
+  ],
+  "main": "./extension.js",
+  "contributes": {}
+}

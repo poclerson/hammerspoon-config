@@ -1,0 +1,9 @@
+{
+  "id": "tab-switcher-bridge",
+  "name": "Tab Switcher Bridge",
+  "version": "1.0.0",
+  "minAppVersion": "1.0.0",
+  "description": "Local HTTP bridge for the Hammerspoon TabSwitcher spoon.",
+  "author": "pierre-olivier",
+  "isDesktopOnly": true
+}

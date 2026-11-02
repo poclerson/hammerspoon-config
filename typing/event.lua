@@ -40,6 +40,12 @@
 ---@field modifiers string[]?
 ---@field key string | number?
 
+---@class TabSwitcher.Config
+---@field enabled boolean?
+---@field modifiers string[]?
+---@field key string | number?
+---@field bridges table<string, number>?
+
 ---@class Gesture.Config
 ---@field enabled boolean?
 ---@field consume boolean?
