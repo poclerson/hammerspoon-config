@@ -56,6 +56,15 @@
     "modifiers": ["alt"],
     "key": "tab"
   },
+  "tabSwitcher": {
+    "enabled": true,
+    "modifiers": ["ctrl"],
+    "key": "tab",
+    "bridges": {
+      "vscode": 38621,
+      "obsidian": 38622
+    }
+  },
   "window": {
     "default": {
       "w": 100,
