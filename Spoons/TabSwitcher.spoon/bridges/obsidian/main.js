@@ -1,19 +1,18 @@
 const http = require('http');
-const { Plugin } = require('obsidian');
+const { Plugin, TFile } = require('obsidian');
 
 const PORT = 38622;
 const HOST = '127.0.0.1';
+const RECENT_LIMIT = 10;
 
 module.exports = class TabSwitcherBridge extends Plugin {
   onload() {
     this.leafIds = new WeakMap();
     this.nextLeafId = 1;
     this.server = http.createServer((request, response) => {
-      try {
-        this.handle(request, response);
-      } catch (error) {
+      this.handle(request, response).catch((error) => {
         this.json(response, 500, { ok: false, error: String(error) });
-      }
+      });
     });
 
     this.server.on('error', (error) => console.error('TabSwitcher bridge:', error));
@@ -32,10 +31,29 @@ module.exports = class TabSwitcherBridge extends Plugin {
     this.server = undefined;
   }
 
+  isMainLeaf(leaf) {
+    if (typeof leaf.getRoot !== 'function') return false;
+
+    const workspace = this.app.workspace;
+    const root = leaf.getRoot();
+
+    return root === workspace.rootSplit
+      || (workspace.floatingSplit != null && root === workspace.floatingSplit);
+  }
+
+  activeMainLeaf() {
+    const active = this.app.workspace.activeLeaf;
+    if (active && this.isMainLeaf(active)) return active;
+
+    return this.app.workspace.getMostRecentLeaf(this.app.workspace.rootSplit) || null;
+  }
+
   leaves() {
     const leaves = [];
 
-    this.app.workspace.iterateAllLeaves((leaf) => leaves.push(leaf));
+    this.app.workspace.iterateAllLeaves((leaf) => {
+      if (this.isMainLeaf(leaf)) leaves.push(leaf);
+    });
 
     return leaves;
   }
@@ -51,20 +69,69 @@ module.exports = class TabSwitcherBridge extends Plugin {
     return id;
   }
 
-  tabs() {
-    return this.leaves()
-      .map((leaf) => ({
-        id: this.idFor(leaf),
-        title: leaf.getDisplayText ? leaf.getDisplayText() : '',
-        active: leaf === this.app.workspace.activeLeaf,
-      }))
-      .filter((item) => item.title);
+  pathFor(leaf) {
+    if (typeof leaf.getViewState !== 'function') return null;
+
+    const state = leaf.getViewState();
+    const path = state && state.state && state.state.file;
+
+    return typeof path === 'string' && path !== '' ? path : null;
   }
 
-  focus(id) {
-    const leaf = this.leaves().find((candidate) => this.idFor(candidate) === id);
-    if (!leaf) return false;
+  leafId(leaf) {
+    const path = this.pathFor(leaf);
 
+    return path ? `file:${path}` : `leaf:${this.idFor(leaf)}`;
+  }
+
+  fileFor(path) {
+    const file = this.app.vault.getAbstractFileByPath(path);
+
+    return file instanceof TFile ? file : null;
+  }
+
+  tabs() {
+    const active = this.activeMainLeaf();
+    const openPaths = new Set();
+    const items = [];
+
+    for (const leaf of this.leaves()) {
+      const title = leaf.getDisplayText ? leaf.getDisplayText() : '';
+      if (!title) continue;
+
+      const path = this.pathFor(leaf);
+      if (path) openPaths.add(path);
+
+      items.push({
+        id: this.leafId(leaf),
+        title,
+        active: leaf === active,
+      });
+    }
+
+    const recent = typeof this.app.workspace.getLastOpenFiles === 'function'
+      ? this.app.workspace.getLastOpenFiles()
+      : [];
+
+    for (const path of recent.slice(0, RECENT_LIMIT)) {
+      if (openPaths.has(path)) continue;
+
+      const file = this.fileFor(path);
+      if (!file) continue;
+
+      openPaths.add(path);
+      items.push({
+        id: `file:${path}`,
+        title: file.basename || file.name || path,
+        active: false,
+        context: '[Recent]',
+      });
+    }
+
+    return items;
+  }
+
+  reveal(leaf) {
     this.app.workspace.setActiveLeaf(leaf, { focus: true });
 
     try {
@@ -72,7 +139,37 @@ module.exports = class TabSwitcherBridge extends Plugin {
     } catch (error) {
       console.error('TabSwitcher bridge:', error);
     }
+  }
 
+  async openPath(path) {
+    const file = this.fileFor(path);
+    if (!file) return false;
+
+    const leaf = this.app.workspace.getLeaf('tab');
+    await leaf.openFile(file, { active: true });
+    this.reveal(leaf);
+
+    return true;
+  }
+
+  async focus(id) {
+    if (id.startsWith('file:')) {
+      const path = id.slice(5);
+      const leaf = this.leaves().find((candidate) => this.pathFor(candidate) === path);
+
+      if (leaf) {
+        this.reveal(leaf);
+        return true;
+      }
+
+      return this.openPath(path);
+    }
+
+    const leafId = id.startsWith('leaf:') ? id.slice(5) : id;
+    const leaf = this.leaves().find((candidate) => this.idFor(candidate) === leafId);
+    if (!leaf) return false;
+
+    this.reveal(leaf);
     return true;
   }
 
@@ -86,7 +183,7 @@ module.exports = class TabSwitcherBridge extends Plugin {
     response.end(body);
   }
 
-  handle(request, response) {
+  async handle(request, response) {
     const url = new URL(request.url, `http://${HOST}:${PORT}`);
 
     if (request.method === 'GET' && url.pathname === '/tabs') {
@@ -95,7 +192,7 @@ module.exports = class TabSwitcherBridge extends Plugin {
     }
 
     if (request.method === 'GET' && url.pathname === '/focus') {
-      const focused = this.focus(url.searchParams.get('id') || '');
+      const focused = await this.focus(url.searchParams.get('id') || '');
       this.json(response, focused ? 200 : 404, { ok: focused });
       return;
     }

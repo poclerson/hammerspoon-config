@@ -63,6 +63,12 @@
     "bridges": {
       "vscode": 38621,
       "obsidian": 38622
+    },
+    "limits": {
+      "arc": 5,
+      "terminal": 15,
+      "vscode": 15,
+      "obsidian": 15
     }
   },
   "window": {
