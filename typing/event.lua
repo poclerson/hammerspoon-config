@@ -45,6 +45,7 @@
 ---@field modifiers string[]?
 ---@field key string | number?
 ---@field bridges table<string, number>?
+---@field limits table<string, number>?
 
 ---@class Gesture.Config
 ---@field enabled boolean?
