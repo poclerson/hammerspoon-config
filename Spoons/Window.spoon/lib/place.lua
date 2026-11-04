@@ -6,7 +6,7 @@ function spoon.Window.place(event, action, window)
   local default = spoon.Window.config.default
   local config = action.config or default
   local target = spoon.Window.getTargetWindow(event, window)
-  if not target or not target:isStandard() then return false end
+  if not target or not spoon.Window.isEligibleWindow(target) then return false end
 
   local frame = target:screen():frame()
 

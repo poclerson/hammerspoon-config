@@ -51,6 +51,7 @@ function spoon.Window.watchWindowEvents(config)
   if #types == 0 then return end
 
   hs.window.filter.default:subscribe(types, function(window, _, event)
+    if not spoon.Window.isEligibleWindow(window) then return end
     spoon.Window.handleAction({ name = event, window = window }, config)
   end)
 end

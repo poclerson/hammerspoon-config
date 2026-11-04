@@ -6,7 +6,7 @@ function spoon.Window.move(event, action, window)
   local default = spoon.Window.config.default
   local config = action.config
   local target = spoon.Window.getTargetWindow(event, window)
-  if not target or not target:isStandard() then return false end
+  if not target or not spoon.Window.isEligibleWindow(target) then return false end
 
   local direction = (config and config.direction) or (event and event.direction) or default.direction
   if not direction then return false end

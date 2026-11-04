@@ -82,9 +82,29 @@ function spoon.Window.handleAction(event, config)
   return not not handler(event, action)
 end
 
+---@param window hs.window?
+---@return boolean
+function spoon.Window.isEligibleWindow(window)
+  if not window then return false end
+  if not window:isStandard() then return false end
+  local subrole = window:subrole()
+  if type(subrole) == 'string' and subrole ~= 'AXStandardWindow' then return false end
+  -- Exclude PiP windows (and similar floating popups) by title
+  local title = window:title()
+  if type(title) == 'string' then
+    local lower = title:lower()
+    if lower:find('picture%-in%-picture') or lower:find('picture in picture') or lower == 'pip' then
+      return false
+    end
+  end
+  return true
+end
+
 ---@param event Event?
 ---@param window hs.window?
 ---@return hs.window | nil
 function spoon.Window.getTargetWindow(event, window)
-  return window or (event and event.window) or hs.application.frontmostApplication():focusedWindow()
+  local target = window or (event and event.window) or hs.application.frontmostApplication():focusedWindow()
+  if not spoon.Window.isEligibleWindow(target) then return nil end
+  return target
 end
