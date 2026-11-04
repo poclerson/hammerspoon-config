@@ -14,6 +14,10 @@
 ---array of `cmd`, `alt`, `ctrl` and/or `shift`) and `key` (a key name or key
 ---code) in `config.tabSwitcher`.
 ---
+---The number of tabs fetched and shown per app can be limited with `limits` in
+---`config.tabSwitcher`, keyed by `arc`, `terminal`, `vscode` or `obsidian`.
+---The default is 15, and Arc defaults to 5 to keep its AppleScript fast.
+---
 ---@class TabSwitcher
 ---@field name string
 ---@field config TabSwitcher.Config?
@@ -120,6 +124,26 @@ local function orderTabs(app, items)
   return rotated
 end
 
+---Returns the per-app fetch limit, capped to the shared 15-item maximum.
+---@param self TabSwitcher
+---@param adapter table
+---@return number
+local function tabLimit(self, adapter)
+  local limits = self.config and self.config.limits
+  local configured = nil
+
+  if type(limits) == 'table' then
+    configured = limits[adapter.key]
+      or (adapter.name and limits[adapter.name:lower()])
+      or limits[self.bundleID]
+  end
+
+  local limit = math.floor(tonumber(configured) or tonumber(adapter.limit) or 15)
+  if limit < 1 then limit = 1 end
+
+  return math.min(limit, 15)
+end
+
 ---Returns the tabs of the frontmost window of the frontmost application.
 ---@param self TabSwitcher
 ---@return table[]
@@ -135,8 +159,9 @@ local function getTabs(self)
   if not adapter then return {} end
 
   self.adapter = adapter
+  local limit = tabLimit(self, adapter)
 
-  local ok, items, err = pcall(adapter.list, app)
+  local ok, items, err = pcall(adapter.list, app, limit)
   if not ok then
     self:notify('TabSwitcher: ' .. tostring(items))
     return {}
@@ -149,7 +174,12 @@ local function getTabs(self)
 
   if #items == 0 then return {} end
 
-  return orderTabs(app, items)
+  local ordered = orderTabs(app, items)
+  if #ordered > limit then
+    for index = #ordered, limit + 1, -1 do ordered[index] = nil end
+  end
+
+  return ordered
 end
 
 ---Focuses a tab through the current application's adapter.
